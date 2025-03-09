@@ -60,25 +60,6 @@ public class Wallet {
         savingsGoals.put(goalName, targetAmount);
     }
 
-    /**
-     * The goal achievement marker method
-     * @param goalName the name of the goal for accumulation
-     * @return true if the goal is completed false otherwise
-     */
-    public boolean isGoalAchieved(String goalName) {
-        return amount >= savingsGoals.get(goalName);
-    }
 
-    /**
-     * shows current goals and their status
-     */
-    public void showGoals() {
-        System.out.println("Ваши цели накоплений:");
-        for (Map.Entry<String, Double> goal : savingsGoals.entrySet()) {
-            boolean achieved = isGoalAchieved(goal.getKey());
-            String status = achieved ? " Достигнута" : " Не достигнута";
-            System.out.println("- " + goal.getKey() + ": " + goal.getValue() + " (" + status + ")");
-        }
-    }
 }
 

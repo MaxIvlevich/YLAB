@@ -6,16 +6,20 @@ import org.example.homework_1.repository.TransactionRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
-
+import java.util.stream.Collectors;
 
 
 public class TransactionService {
     private final TransactionRepository transactionRepository;
+    private final WalletService walletService;
     LocalDate now = LocalDate.now();
 
-    public TransactionService(TransactionRepository transactionRepository) {
+    public TransactionService(TransactionRepository transactionRepository, WalletService walletService) {
         this.transactionRepository = transactionRepository;
+        this.walletService = walletService;
     }
 
     public void addTransaction(UUID userId, TransactionType type, double amount, String category, String description) {
@@ -46,4 +50,99 @@ public class TransactionService {
         System.out.println("Удаление транзакции " + transactionId);
         transactionRepository.deleteTransaction(userId, transactionId);
     }
+
+    public double getTotalIncome(UUID userId, LocalDate fromDate) {
+        return transactionRepository.getUserTransactions(userId).stream()
+                .filter(transaction -> transaction.getType() == TransactionType.INCOME)
+                .filter(transaction -> !transaction.getDate().isBefore(fromDate)) // Дата >= fromDate
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+    }
+    public double getTotalExpenses(UUID userId, LocalDate fromDate) {
+        return transactionRepository.getUserTransactions(userId).stream()
+                .filter(transaction -> transaction.getType() == TransactionType.EXPENSE)
+                .filter(transaction -> !transaction.getDate().isBefore(fromDate)) // Дата >= fromDate
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+    }
+
+    public void getTotalExpensesOrIncomeForPeriod(UUID userId,LocalDate fromDate){
+        System.out.println("Ваш расход за выбранный период | " +  getTotalExpenses(userId,fromDate));
+        System.out.println("Ваш доход за выбранный период  | " + getTotalIncome(userId,fromDate) );
+
+    }
+    public  Map<String, Double> getExpensesByCategory(UUID userId, LocalDate fromDate) {
+        Map<String, Double> expensesByCategory = transactionRepository.getUserTransactions(userId).stream()
+                .filter(transaction -> transaction.getType() == TransactionType.EXPENSE) // Только расходы
+                .filter(transaction -> !transaction.getDate().isBefore(fromDate)) // Дата >= fromDate
+                .collect(Collectors.groupingBy(
+                        Transaction::getCategory, // Группируем по категории
+                        Collectors.summingDouble(Transaction::getAmount) // Суммируем сумму расходов
+                ));
+
+        System.out.println("Расходы по категориям с " + fromDate + ":");
+        expensesByCategory.forEach((category, totalAmount) -> {
+            System.out.printf("Категория: %-15s | Сумма: %.2f%n", category, totalAmount);
+        });
+        return expensesByCategory;
+    }
+
+    public List<String> showUserExpensesCategory(UUID userId) {
+        Set<String> userExpensesCategory = transactionRepository.getUserTransactions(userId).stream()
+                .filter(transaction -> transaction.getType() == TransactionType.EXPENSE)
+                .map(Transaction::getCategory)
+                .collect(Collectors.toSet());
+        int i = 1;
+        for (String category : userExpensesCategory) {
+            System.out.println(i +".  "+ category);
+            i++;
+        }
+        return userExpensesCategory.stream().toList();
+    }
+
+    public void getExpensesBySpecificCategory(UUID userId, String category, LocalDate fromDate) {
+      double sumExpense = transactionRepository.getUserTransactions(userId).stream()
+                .filter(transaction -> transaction.getType() == TransactionType.EXPENSE) // Только расходы
+                .filter(transaction -> transaction.getCategory().equalsIgnoreCase(category)) // Фильтр по категории
+                .filter(transaction -> !transaction.getDate().isBefore(fromDate)) // Дата >= fromDate
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+
+        System.out.println("Сумма расходов по категории: "+ category +"| "+ sumExpense);
+    }
+
+    public void generateReport(UUID userId, LocalDate fromDate){
+
+        double totalIncome = getTotalIncome(userId, fromDate);
+        double totalExpenses = getTotalExpenses(userId, fromDate);
+        double currentBalance = walletService.getBalance(userId);
+        double balanceForPeriod = totalIncome - totalExpenses;
+
+        System.out.println("Финансовый отчёт пользователя:" );
+
+        System.out.println("Период: с " + fromDate + " по " + LocalDate.now());
+        System.out.println("--------------------------------------------------");
+        System.out.println("Общий доход: " + totalIncome);
+        System.out.println("Общие расходы: " + totalExpenses);
+        System.out.println("Текущий баланс: " + currentBalance);
+        System.out.println("Ваш баланс за выбранный период: "+ balanceForPeriod);
+        System.out.println("--------------------------------------------------");
+        System.out.println("Бюджет");
+        walletService.showBudget(userId);
+
+        System.out.println("--------------------------------------------------");
+        System.out.println(" Анализ расходов по категориям:");
+        getExpensesByCategory(userId,fromDate);
+
+        System.out.println("--------------------------------------------------");
+        System.out.println(" Цели:");
+        walletService.showGoals(userId);
+
+        System.out.println("--------------------------------------------------");
+
+
+
+
+    }
+
 }

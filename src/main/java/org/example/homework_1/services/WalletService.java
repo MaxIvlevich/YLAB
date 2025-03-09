@@ -3,11 +3,11 @@ package org.example.homework_1.services;
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.enums.TransactionType;
 import org.example.homework_1.repository.TransactionRepository;
+import org.example.homework_1.repository.UserRepository;
 import org.example.homework_1.repository.WalletRepository;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,10 +17,17 @@ import java.util.UUID;
 public class WalletService {
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
+    private final EmailService emailService;
+    private final UserService userService;
 
-    public WalletService(WalletRepository walletRepository, TransactionRepository transactionRepository) {
+    public WalletService(WalletRepository walletRepository,
+                         TransactionRepository transactionRepository,
+                         EmailService emailService,
+                         UserService userService) {
         this.walletRepository = walletRepository;
         this.transactionRepository = transactionRepository;
+        this.emailService = emailService;
+        this.userService = userService;
     }
 
     /**
@@ -66,7 +73,11 @@ public class WalletService {
      * @param userId unique user ID, UUID value
      */
     public void showBudget(UUID userId) {
-        System.out.println("аш месячный бюджет: " + walletRepository.getBudget(userId));
+        if(walletRepository.getBudget(userId)>0){
+            System.out.println("Ваш месячный бюджет: " + walletRepository.getBudget(userId));
+        }else {
+            System.out.println("Ваш месячный бюджет не установлен ");
+        }
     }
 
     /**
@@ -82,12 +93,14 @@ public class WalletService {
         double sum  =  transactions.stream()
                 .filter(transaction -> !transaction.getDate().isBefore(oneMonthAgo)) // Отфильтровываем транзакции за последний месяц
                 .mapToDouble(Transaction::getAmount).sum();
-        if (sum > userBudget){
-            System.out.println("Бюджет превышен на : " +  (sum-userBudget));
+        if (sum > userBudget && userBudget != 0.0){
+            String body = "Бюджет превышен на : " +  (sum-userBudget);
+            String  subject = "Превышен лимит Бюджета";
+            System.out.println(body);
+            emailService.sendEmail(userService.getUserEmail(userId),subject,body);
             return true;
         }
         return false;
-
 
     }
 
@@ -127,10 +140,22 @@ public class WalletService {
      * @param userId unique user ID, UUID value
      */
     public void showGoals(UUID userId) {
-        walletRepository.showGoals(userId);
+        double balance = getBalance(userId);
+        walletRepository.showGoals(userId,balance);
     }
 
-    public void checkGoal(){
+    public void checkGoal(UUID userId,String goalName,double balance){
+        double goal = walletRepository.getUserGoals(userId).get(goalName);
+       if(walletRepository.isGoalAchieved(userId,goalName,balance)){
+           System.out.println("Цель: "+ goalName +" достигнута" + "| "+goal+"/" + balance +"|" );
+       }
+    }
+    public void checkAllGoals(UUID userId){
+        double balance = getBalance(userId);
+        List<String> goalNames = walletRepository.getUserGoals(userId).keySet().stream().toList();
+        for (String goalName : goalNames) {
+            checkGoal(userId, goalName, balance);
+        }
 
 
     }

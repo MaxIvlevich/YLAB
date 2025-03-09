@@ -2,9 +2,7 @@ package org.example.homework_1.repository;
 
 import org.example.homework_1.models.User;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class UserRepository {
     private final Map<UUID,User> users = new HashMap<>();
@@ -46,10 +44,17 @@ public class UserRepository {
         if (user != null) {
             user.setName(updateUser.getName());
             user.setEmail(updateUser.getEmail());
-            user.setPassword(user.getPassword());
+            user.setPassword(updateUser.getPassword());
+            user.setRoles(updateUser.getRoles());
             return true;
         }
         return false;
+
+
+    }
+
+    public List<User> getAllUsers() {
+        return new ArrayList<>(users.values());
 
 
     }

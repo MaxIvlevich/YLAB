@@ -49,10 +49,19 @@ public class WalletRepository {
      * @param targetAmount goal amount, double value
      */
     public void addGoal(UUID userId, String goalName, double targetAmount) {
-        Wallet balance = userWallets.get(userId);
-        if (balance != null) {
-            balance.addGoal(goalName, targetAmount);
+        Wallet wallet = userWallets.get(userId);
+        if (wallet != null) {
+            wallet.addGoal(goalName, targetAmount);
         }
+    }
+
+    public Map<String,Double> getUserGoals(UUID userId){
+        Wallet wallet = userWallets.get(userId);
+        if (wallet != null) {
+           return wallet.getSavingsGoals();
+        }
+        return null;
+
     }
 
     /**
@@ -61,20 +70,31 @@ public class WalletRepository {
      * @param goalName Goal name, String value
      * @return  true if the goal is completed false otherwise
      */
-    public boolean isGoalAchieved(UUID userId, String goalName) {
-        Wallet wallet = userWallets.get(userId);
-        return wallet != null && wallet.isGoalAchieved(goalName);
+    public boolean isGoalAchieved(UUID userId, String goalName,double balance) {
+        double goal = userWallets.get(userId).getSavingsGoals().get(goalName);
+        return balance >= goal;
+
+
     }
 
     /**
      * shows the user's current goals
      * @param userId unique user ID, UUID value
      */
-    public void showGoals(UUID userId) {
-        Wallet wallet = userWallets.get(userId);
-        if (wallet != null) {
-            wallet.showGoals();
+    public void showGoals(UUID userId,double balance) {
+        System.out.println("Ваши цели накоплений:");
+        for (Map.Entry<String, Double> goal : userWallets.get(userId).getSavingsGoals().entrySet()) {
+            boolean achieved = isGoalAchieved(userId,goal.getKey(),balance);
+            String status = achieved ? " Достигнута" : " Не достигнута";
+            System.out.println("- " + goal.getKey() + ": " + goal.getValue() + " (" + status + ")");
         }
+
+
+
+
+
+
+
     }
 
 
