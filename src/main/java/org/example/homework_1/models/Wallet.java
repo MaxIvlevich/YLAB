@@ -2,6 +2,7 @@ package org.example.homework_1.models;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,7 @@ public class Wallet {
     private UUID userId;
     private double amount;
     private double monthlyBudget;
-    private Map<String, Double> savingsGoals;
+    private Map<String, BigDecimal> savingsGoals;
     private LocalDateTime lastUpdated;
 
     public Wallet(UUID userId){
@@ -56,7 +57,7 @@ public class Wallet {
      * @param goalName the name of the goal for accumulation
      * @param targetAmount amount to accumulate
      */
-    public void addGoal(String goalName, double targetAmount) {
+    public void addGoal(String goalName, BigDecimal targetAmount) {
         savingsGoals.put(goalName, targetAmount);
     }
 

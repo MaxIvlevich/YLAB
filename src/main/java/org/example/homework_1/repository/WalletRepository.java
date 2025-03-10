@@ -2,6 +2,7 @@ package org.example.homework_1.repository;
 
 import org.example.homework_1.models.Wallet;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -48,14 +49,14 @@ public class WalletRepository {
      * @param goalName Goal name, String value
      * @param targetAmount goal amount, double value
      */
-    public void addGoal(UUID userId, String goalName, double targetAmount) {
+    public void addGoal(UUID userId, String goalName, BigDecimal targetAmount) {
         Wallet wallet = userWallets.get(userId);
         if (wallet != null) {
             wallet.addGoal(goalName, targetAmount);
         }
     }
 
-    public Map<String,Double> getUserGoals(UUID userId){
+    public Map<String,BigDecimal> getUserGoals(UUID userId){
         Wallet wallet = userWallets.get(userId);
         if (wallet != null) {
            return wallet.getSavingsGoals();
@@ -70,9 +71,9 @@ public class WalletRepository {
      * @param goalName Goal name, String value
      * @return  true if the goal is completed false otherwise
      */
-    public boolean isGoalAchieved(UUID userId, String goalName,double balance) {
-        double goal = userWallets.get(userId).getSavingsGoals().get(goalName);
-        return balance >= goal;
+    public boolean isGoalAchieved(UUID userId, String goalName,BigDecimal balance) {
+        BigDecimal goal = userWallets.get(userId).getSavingsGoals().get(goalName);
+        return (balance.compareTo(goal)>= 0);
 
 
     }
@@ -81,9 +82,9 @@ public class WalletRepository {
      * shows the user's current goals
      * @param userId unique user ID, UUID value
      */
-    public void showGoals(UUID userId,double balance) {
+    public void showGoals(UUID userId,BigDecimal balance) {
         System.out.println("Ваши цели накоплений:");
-        for (Map.Entry<String, Double> goal : userWallets.get(userId).getSavingsGoals().entrySet()) {
+        for (Map.Entry<String, BigDecimal> goal : userWallets.get(userId).getSavingsGoals().entrySet()) {
             boolean achieved = isGoalAchieved(userId,goal.getKey(),balance);
             String status = achieved ? " Достигнута" : " Не достигнута";
             System.out.println("- " + goal.getKey() + ": " + goal.getValue() + " (" + status + ")");

@@ -6,6 +6,7 @@ import org.example.homework_1.repository.TransactionRepository;
 import org.example.homework_1.repository.UserRepository;
 import org.example.homework_1.repository.WalletRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -52,10 +53,13 @@ public class WalletService {
      * @param userId unique user ID,the parameter for the search,UUID value
      * @return current balance,double value
      */
-    public double getBalance(UUID userId) {
-        return transactionRepository.getUserTransactions(userId).stream()
-                .mapToDouble(t -> t.getType() == TransactionType.INCOME ? t.getAmount() : -t.getAmount())
+    public BigDecimal getBalance(UUID userId) {
+        double balance = transactionRepository.getUserTransactions(userId).stream()
+                .mapToDouble(t -> t.getType() == TransactionType.INCOME ?
+                        t.getAmount().doubleValue() :
+                        t.getAmount().negate().doubleValue())
                 .sum();
+        return BigDecimal.valueOf(balance);
     }
 
     /**
@@ -92,7 +96,7 @@ public class WalletService {
        LocalDate oneMonthAgo = currentDate.minus(1, ChronoUnit.MONTHS);
         double sum  =  transactions.stream()
                 .filter(transaction -> !transaction.getDate().isBefore(oneMonthAgo)) // Отфильтровываем транзакции за последний месяц
-                .mapToDouble(Transaction::getAmount).sum();
+                .mapToDouble(transaction->transaction.getAmount().doubleValue()).sum();
         if (sum > userBudget && userBudget != 0.0){
             String body = "Бюджет превышен на : " +  (sum-userBudget);
             String  subject = "Превышен лимит Бюджета";
@@ -130,7 +134,7 @@ public class WalletService {
      * @param goalName Goal name, String value
      * @param targetAmount goal amount, double value
      */
-    public void addGoal(UUID userId, String goalName, double targetAmount) {
+    public void addGoal(UUID userId, String goalName, BigDecimal targetAmount) {
         walletRepository.addGoal(userId, goalName, targetAmount);
         System.out.println("Цель '" + goalName + "' добавлена! Требуется накопить: " + targetAmount);
     }
@@ -140,18 +144,18 @@ public class WalletService {
      * @param userId unique user ID, UUID value
      */
     public void showGoals(UUID userId) {
-        double balance = getBalance(userId);
+        BigDecimal balance = getBalance(userId);
         walletRepository.showGoals(userId,balance);
     }
 
-    public void checkGoal(UUID userId,String goalName,double balance){
-        double goal = walletRepository.getUserGoals(userId).get(goalName);
+    public void checkGoal(UUID userId,String goalName,BigDecimal balance){
+        BigDecimal goal = walletRepository.getUserGoals(userId).get(goalName);
        if(walletRepository.isGoalAchieved(userId,goalName,balance)){
            System.out.println("Цель: "+ goalName +" достигнута" + "| "+goal+"/" + balance +"|" );
        }
     }
     public void checkAllGoals(UUID userId){
-        double balance = getBalance(userId);
+        BigDecimal balance = getBalance(userId);
         List<String> goalNames = walletRepository.getUserGoals(userId).keySet().stream().toList();
         for (String goalName : goalNames) {
             checkGoal(userId, goalName, balance);

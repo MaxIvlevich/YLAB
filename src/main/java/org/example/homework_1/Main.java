@@ -12,6 +12,7 @@ import org.example.homework_1.services.TransactionService;
 import org.example.homework_1.services.UserService;
 import org.example.homework_1.services.WalletService;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -226,7 +227,7 @@ public class Main {
             System.out.print("Введите название цели: ");
             String goalName = scanner.nextLine();
             System.out.print("Введите сумму для накопления: ");
-            double  amount =  isCorrectIncomeDouble();
+            BigDecimal  amount =  isCorrectIncomeDouble();
             walletService.addGoal(userId, goalName, amount);
             showMainMenu();
         }
@@ -260,7 +261,7 @@ public class Main {
             int choice = isCorrectChoice();
             Transaction transaction = transactions.get(choice - 1);
             System.out.println("Введите новую сумму");
-            double newAmount = scanner.nextDouble();
+            BigDecimal newAmount = scanner.nextBigDecimal();
             scanner.nextLine();
             System.out.println("Введите новую категорию");
             String newCategory = scanner.nextLine();
@@ -324,7 +325,7 @@ public class Main {
         }
         private static void balanceOperation (TransactionType type){
             System.out.print(type == TransactionType.INCOME ? "Введите сумму пополнения: " : "Введите сумму расходов: ");
-            double amount =  isCorrectIncomeDouble();
+            BigDecimal amount =  isCorrectIncomeDouble();
             System.out.print("Введите категорию: ");
             String category = scanner.nextLine();
             System.out.print("Введите описание: ");
@@ -358,20 +359,21 @@ public class Main {
             }
             return scanner.nextInt();
         }
-        private static double isCorrectIncomeDouble(){
-            double amount;
+        private static BigDecimal isCorrectIncomeDouble(){
+            BigDecimal amount;
+            BigDecimal z = new BigDecimal(0);
             do {
                 while (!scanner.hasNextDouble()) {
                     System.out.println("Ошибка! Введите корректное число.");
                     scanner.next();
                 }
-                amount = scanner.nextDouble();
+                amount = scanner.nextBigDecimal();
                 scanner.nextLine(); // Очистка после nextDouble()
 
-                if (amount <= 0) {
+                if (amount.compareTo(z)<= 0) {
                     System.out.println("Ошибка! Сумма должна быть положительной.");
                 }
-            } while (amount <= 0);
+            } while (amount.compareTo(z)<= 0);
             return amount;
 
         }

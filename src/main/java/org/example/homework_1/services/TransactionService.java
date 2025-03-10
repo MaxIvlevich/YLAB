@@ -4,6 +4,7 @@ import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.enums.TransactionType;
 import org.example.homework_1.repository.TransactionRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class TransactionService {
         this.walletService = walletService;
     }
 
-    public void addTransaction(UUID userId, TransactionType type, double amount, String category, String description) {
+    public void addTransaction(UUID userId, TransactionType type, BigDecimal amount, String category, String description) {
         UUID id = UUID.randomUUID();
         Transaction transaction = new Transaction(id,userId,type, amount, category, now, description);
         transactionRepository.addTransaction(transaction);
@@ -55,14 +56,14 @@ public class TransactionService {
         return transactionRepository.getUserTransactions(userId).stream()
                 .filter(transaction -> transaction.getType() == TransactionType.INCOME)
                 .filter(transaction -> !transaction.getDate().isBefore(fromDate)) // Дата >= fromDate
-                .mapToDouble(Transaction::getAmount)
+                .mapToDouble(transaction->transaction.getAmount().doubleValue())
                 .sum();
     }
     public double getTotalExpenses(UUID userId, LocalDate fromDate) {
         return transactionRepository.getUserTransactions(userId).stream()
                 .filter(transaction -> transaction.getType() == TransactionType.EXPENSE)
                 .filter(transaction -> !transaction.getDate().isBefore(fromDate)) // Дата >= fromDate
-                .mapToDouble(Transaction::getAmount)
+                .mapToDouble(transaction->transaction.getAmount().doubleValue())
                 .sum();
     }
 
@@ -77,7 +78,7 @@ public class TransactionService {
                 .filter(transaction -> !transaction.getDate().isBefore(fromDate)) // Дата >= fromDate
                 .collect(Collectors.groupingBy(
                         Transaction::getCategory, // Группируем по категории
-                        Collectors.summingDouble(Transaction::getAmount) // Суммируем сумму расходов
+                        Collectors.summingDouble(transaction->transaction.getAmount().doubleValue()) // Суммируем сумму расходов
                 ));
 
         System.out.println("Расходы по категориям с " + fromDate + ":");
@@ -105,7 +106,7 @@ public class TransactionService {
                 .filter(transaction -> transaction.getType() == TransactionType.EXPENSE) // Только расходы
                 .filter(transaction -> transaction.getCategory().equalsIgnoreCase(category)) // Фильтр по категории
                 .filter(transaction -> !transaction.getDate().isBefore(fromDate)) // Дата >= fromDate
-                .mapToDouble(Transaction::getAmount)
+                .mapToDouble(transaction-> transaction.getAmount().doubleValue())
                 .sum();
 
         System.out.println("Сумма расходов по категории: "+ category +"| "+ sumExpense);
@@ -115,7 +116,7 @@ public class TransactionService {
 
         double totalIncome = getTotalIncome(userId, fromDate);
         double totalExpenses = getTotalExpenses(userId, fromDate);
-        double currentBalance = walletService.getBalance(userId);
+        BigDecimal currentBalance = walletService.getBalance(userId);
         double balanceForPeriod = totalIncome - totalExpenses;
 
         System.out.println("Финансовый отчёт пользователя:" );
