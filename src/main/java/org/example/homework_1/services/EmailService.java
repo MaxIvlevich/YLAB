@@ -1,9 +1,12 @@
 package org.example.homework_1.services;
 
 
-public class EmailService {
+import org.example.homework_1.services.Interfaces.EmailServiceInterface;
+
+public class EmailService implements EmailServiceInterface {
 
 
+    @Override
     public void sendEmail(String toEmail, String subject, String body) {
         // Симуляция отправки email
         System.out.println("📧 Email отправлен на: " + toEmail);

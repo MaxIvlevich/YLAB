@@ -7,10 +7,9 @@ import org.example.homework_1.models.enums.Status;
 import org.example.homework_1.models.enums.TransactionType;
 import org.example.homework_1.repository.TransactionRepository;
 import org.example.homework_1.repository.WalletRepository;
-import org.example.homework_1.services.EmailService;
-import org.example.homework_1.services.TransactionService;
-import org.example.homework_1.services.UserService;
-import org.example.homework_1.services.WalletService;
+import org.example.homework_1.services.*;
+import org.example.homework_1.services.Interfaces.EmailServiceInterface;
+import org.example.homework_1.services.Interfaces.TransactionServiceInterface;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,12 +22,12 @@ import static org.example.homework_1.models.enums.TransactionType.INCOME;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
-    private static final UserService userService = new UserService();
-    private static final EmailService emailService = new EmailService();
+    private static final UserServiceImpl userService = new UserServiceImpl();
+    private static final EmailServiceInterface emailService = new EmailService();
     private static final WalletRepository walletRepository = new WalletRepository();
     private static final TransactionRepository transactionRepository = new TransactionRepository();
-    private static final WalletService walletService = new WalletService(walletRepository, transactionRepository, emailService, userService);
-    private static final TransactionService transactionService = new TransactionService(transactionRepository, walletService);
+    private static final WalletServiceImpl walletService = new WalletServiceImpl(walletRepository, transactionRepository, emailService, userService);
+    private static final TransactionServiceInterface transactionService = new TransactionService(transactionRepository, walletService);
 
 
     private static User currentUser = null;

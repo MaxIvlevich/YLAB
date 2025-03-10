@@ -3,8 +3,9 @@ package org.example.homework_1.services;
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.enums.TransactionType;
 import org.example.homework_1.repository.TransactionRepository;
-import org.example.homework_1.repository.UserRepository;
 import org.example.homework_1.repository.WalletRepository;
+import org.example.homework_1.services.Interfaces.EmailServiceInterface;
+import org.example.homework_1.services.Interfaces.WalletServiceInterface;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,16 +16,16 @@ import java.util.UUID;
 /**
  * Service for working with user wallets
  */
-public class WalletService {
+public class WalletServiceImpl implements WalletServiceInterface {
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
-    private final EmailService emailService;
-    private final UserService userService;
+    private final EmailServiceInterface emailService;
+    private final UserServiceImpl userService;
 
-    public WalletService(WalletRepository walletRepository,
-                         TransactionRepository transactionRepository,
-                         EmailService emailService,
-                         UserService userService) {
+    public WalletServiceImpl(WalletRepository walletRepository,
+                             TransactionRepository transactionRepository,
+                             EmailServiceInterface emailService,
+                             UserServiceImpl userService) {
         this.walletRepository = walletRepository;
         this.transactionRepository = transactionRepository;
         this.emailService = emailService;
@@ -35,6 +36,7 @@ public class WalletService {
      * The method that creates a wallet for a new user
      * @param userId unique user ID, UUID value
      */
+    @Override
     public void createWalletForUser(UUID userId) {
         walletRepository.initializeWallet(userId);
         showBalance(userId);
@@ -44,6 +46,7 @@ public class WalletService {
      * shows the user's current balance
      * @param userId unique user ID ,UUID value
      */
+    @Override
     public void showBalance(UUID userId) {
         System.out.println("Ваш текущий баланс: " + getBalance(userId));
     }
@@ -53,6 +56,7 @@ public class WalletService {
      * @param userId unique user ID,the parameter for the search,UUID value
      * @return current balance,double value
      */
+    @Override
     public BigDecimal getBalance(UUID userId) {
         double balance = transactionRepository.getUserTransactions(userId).stream()
                 .mapToDouble(t -> t.getType() == TransactionType.INCOME ?
@@ -67,6 +71,7 @@ public class WalletService {
      * @param userId unique user ID
      * @param budget monthly limit ,double value
      */
+    @Override
     public void setBudget(UUID userId, double budget) {
         walletRepository.setBudget(userId, budget);
         System.out.println("Бюджет установлен: " + budget);
@@ -76,6 +81,7 @@ public class WalletService {
      * getting the user's budget
      * @param userId unique user ID, UUID value
      */
+    @Override
     public void showBudget(UUID userId) {
         if(walletRepository.getBudget(userId)>0){
             System.out.println("Ваш месячный бюджет: " + walletRepository.getBudget(userId));
@@ -89,6 +95,7 @@ public class WalletService {
      * @param userId unique user ID, UUID value
      * @return true if the budget is exceeded and false otherwise
      */
+    @Override
     public boolean isBudgetExceeded(UUID userId){
        List<Transaction> transactions =  transactionRepository.getUserExpenseTransactions(userId);
        double userBudget = getBudget(userId);
@@ -113,6 +120,7 @@ public class WalletService {
      * @param userId unique user ID, UUID value
      * @return returns the budget value from the repository
      */
+    @Override
     public double getBudget(UUID userId){
         return walletRepository.getBudget(userId);
 
@@ -122,6 +130,7 @@ public class WalletService {
      * budget excess marker
      * @param userId unique user ID, UUID value
      */
+    @Override
     public void checkAndNotifyBudgetExceeded(UUID userId) {
         if (isBudgetExceeded(userId)) {
             System.out.println("Внимание! Превышен бюджет для пользователя: " + userId);
@@ -134,6 +143,7 @@ public class WalletService {
      * @param goalName Goal name, String value
      * @param targetAmount goal amount, double value
      */
+    @Override
     public void addGoal(UUID userId, String goalName, BigDecimal targetAmount) {
         walletRepository.addGoal(userId, goalName, targetAmount);
         System.out.println("Цель '" + goalName + "' добавлена! Требуется накопить: " + targetAmount);
@@ -143,17 +153,31 @@ public class WalletService {
      * shows the user's current goals
      * @param userId unique user ID, UUID value
      */
+    @Override
     public void showGoals(UUID userId) {
         BigDecimal balance = getBalance(userId);
         walletRepository.showGoals(userId,balance);
     }
 
-    public void checkGoal(UUID userId,String goalName,BigDecimal balance){
+    /**
+     * checks whether the goal has been completed by name.
+     * @param userId unique user ID, UUID value
+     * @param goalName  name of the user's goal String  value
+     * @param balance the user's current balance BigDecimal value.
+     */
+    @Override
+    public void checkGoal(UUID userId, String goalName, BigDecimal balance){
         BigDecimal goal = walletRepository.getUserGoals(userId).get(goalName);
        if(walletRepository.isGoalAchieved(userId,goalName,balance)){
            System.out.println("Цель: "+ goalName +" достигнута" + "| "+goal+"/" + balance +"|" );
        }
     }
+
+    /**
+     * they will check all the user's goals
+     * @param userId unique user ID, UUID value
+     */
+    @Override
     public void checkAllGoals(UUID userId){
         BigDecimal balance = getBalance(userId);
         List<String> goalNames = walletRepository.getUserGoals(userId).keySet().stream().toList();
