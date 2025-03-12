@@ -8,8 +8,8 @@ public class EmailService implements EmailServiceInterface {
 
     @Override
     public void sendEmail(String toEmail, String subject, String body) {
-        // Симуляция отправки email
-        System.out.println("📧 Email отправлен на: " + toEmail);
+
+        System.out.println("Email отправлен на: " + toEmail);
         System.out.println("Тема: " + subject);
         System.out.println("Сообщение: " + body);
     }

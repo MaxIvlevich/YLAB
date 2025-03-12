@@ -8,8 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+
 /**
- * A wallet model with a balance, monthly limit, and savings
+ * Represents a user's wallet containing their balance, budget, and savings goals.
+ * This class holds the user's current balance, their monthly budget, and any
+ * savings goals they have set. It also keeps track of when the wallet was last updated.
+ *
  */
 @Data
 public class Wallet {

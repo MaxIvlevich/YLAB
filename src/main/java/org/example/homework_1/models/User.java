@@ -6,7 +6,12 @@ import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
 
 import java.util.UUID;
-
+/**
+ * Represents a user in the system.
+ * This class is used to store the details of a user, including their name, email, password,
+ * roles, and status. The user also has a unique identifier (UUID) generated when a user is created.
+ *
+ */
 @Data
 @AllArgsConstructor
 public class User {

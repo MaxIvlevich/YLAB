@@ -30,5 +30,5 @@ public interface TransactionServiceInterface {
 
     void getExpensesBySpecificCategory(UUID userId, String category, LocalDate fromDate);
 
-    void generateReport(UUID userId, LocalDate fromDate);
+
 }
