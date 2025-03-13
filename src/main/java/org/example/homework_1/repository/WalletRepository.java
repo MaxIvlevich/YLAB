@@ -12,7 +12,11 @@ import java.util.UUID;
  * a repository for wallet management
  */
 public class WalletRepository implements WalletRepositoryInterface {
-    private final Map<UUID, Wallet> userWallets = new HashMap<>();
+    private final Map<UUID, Wallet> userWallets ;
+
+    public WalletRepository(Map<UUID, Wallet> userWallets) {
+        this.userWallets = userWallets;
+    }
 
     /**
      * the method that initializes the wallet for the new user
@@ -106,5 +110,15 @@ public class WalletRepository implements WalletRepositoryInterface {
             String status = achieved ? " Достигнута" : " Не достигнута";
             System.out.println("- " + goal.getKey() + ": " + goal.getValue() + " (" + status + ")");
         }
+    }
+
+    /**
+     * the method for receiving the user's wallet
+     * @param userId unique user ID, UUID value
+     * @return Wallet of this User
+     */
+    @Override
+    public Wallet getUserWallet(UUID userId) {
+       return userWallets.get(userId);
     }
 }

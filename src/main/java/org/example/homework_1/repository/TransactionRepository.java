@@ -12,7 +12,11 @@ import java.util.*;
  *
  */
 public class TransactionRepository implements TransactionRepositoryInterface {
-    private final Map<UUID, List<Transaction>> transactions = new HashMap<>();
+    private final Map<UUID, List<Transaction>> transactions;
+
+    public TransactionRepository(Map<UUID, List<Transaction>> transactions) {
+        this.transactions = transactions;
+    }
     /**
      * Adds a new transaction to the user's transaction list.
      *
@@ -25,8 +29,9 @@ public class TransactionRepository implements TransactionRepositoryInterface {
      */
     @Override
     public void addTransaction(Transaction transaction) {
-        transactions.putIfAbsent(transaction.getUserUUID(), new ArrayList<>());
-        transactions.get(transaction.getUserUUID()).add(transaction);
+        transactions.computeIfAbsent(transaction.getUserUUID(), k -> new ArrayList<>()).add(transaction);
+       // transactions.putIfAbsent(transaction.getUserUUID(), new ArrayList<>());
+       // transactions.get(transaction.getUserUUID()).add(transaction);
 
     }
 
@@ -81,8 +86,9 @@ public class TransactionRepository implements TransactionRepositoryInterface {
     public boolean deleteTransaction(UUID uuid, UUID transactionId) {
         List<Transaction> userTransactions = transactions.get(uuid);
         if (userTransactions != null) {
+            userTransactions.removeIf(t -> t.getTransactionUUID().equals(transactionId));
             System.out.println("Транзакция удалена " + transactionId);
-            return userTransactions.removeIf(t -> t.getTransactionUUID().equals(transactionId));
+            return true;
 
         }
         return false;

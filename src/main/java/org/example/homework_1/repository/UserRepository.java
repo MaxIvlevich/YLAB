@@ -12,7 +12,11 @@ import java.util.*;
  * This implementation stores users in an in-memory map, but can be adapted to use a database.
  */
 public class UserRepository implements UserRepositoryInterface {
-    private final Map<UUID, User> users = new HashMap<>();
+    private Map<UUID, User> users;
+
+    public UserRepository(Map<UUID, User> users) {
+        this.users=users;
+    }
 
     /**
      * adds a user to the repository
