@@ -80,11 +80,13 @@ public class TransactionService implements TransactionServiceInterface {
      *
      * @param userId        UUID of the user who owns the transaction.
      * @param transactionId UUID of the transaction to be deleted.
+     * @return
      */
     @Override
-    public void deleteTransaction(UUID userId, UUID transactionId) {
-        transactionRepository.deleteTransaction(userId, transactionId);
-        System.out.println("Транзакция удалена " + transactionId);
+    public boolean deleteTransaction(UUID userId, UUID transactionId) {
+       return transactionRepository.deleteTransaction(userId, transactionId);
+
+
     }
     /**
      * Calculates the total income of a user from a specified date.

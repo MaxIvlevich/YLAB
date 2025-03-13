@@ -16,7 +16,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * A service for working with the User entity
  */
 public class UserServiceImpl implements UserServiceInterface {
-    private final UserRepositoryInterface userRepositoryInterface = new UserRepository();
+    public UserServiceImpl(UserRepositoryInterface userRepositoryInterface) {
+        this.userRepositoryInterface=userRepositoryInterface;
+    }
+
+    private final UserRepositoryInterface userRepositoryInterface ;
+
 
     /**
      * a method for registering a user based on incoming data
@@ -30,10 +35,11 @@ public class UserServiceImpl implements UserServiceInterface {
 
         if (userRepositoryInterface.getUserByEmail(email) != null) {
             System.out.println("Пользователь с таким email уже существует!");
+        }else {
+            User newUser = new User(name, email, password, Roles.ROLE_USER, Status.STATUS_ACTIVE);
+            userRepositoryInterface.addUser(newUser);
+            System.out.println("Пользователь зарегистрирован! Ваш уникальный ID: " + newUser.getUserId());
         }
-        User newUser = new User(name, email, password, Roles.ROLE_USER, Status.STATUS_ACTIVE);
-        userRepositoryInterface.addUser(newUser);
-        System.out.println("Пользователь зарегистрирован! Ваш уникальный ID: " + newUser.getUserId());
     }
 
     /**
@@ -100,7 +106,6 @@ public class UserServiceImpl implements UserServiceInterface {
     @Override
     public String getUserEmail(UUID userId) {
         return userRepositoryInterface.getUserById(userId).getEmail();
-
     }
     /**
      * Displays all users and their names, and returns a list of all users.

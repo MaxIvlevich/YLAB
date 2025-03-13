@@ -16,7 +16,7 @@ public interface TransactionServiceInterface {
 
     boolean updateTransaction(UUID userId, UUID transactionId, Transaction updatedTransaction);
 
-    void deleteTransaction(UUID userId, UUID transactionId);
+    boolean deleteTransaction(UUID userId, UUID transactionId);
 
     double getTotalIncome(UUID userId, LocalDate fromDate);
 

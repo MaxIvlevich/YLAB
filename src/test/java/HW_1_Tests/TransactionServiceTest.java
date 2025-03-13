@@ -10,14 +10,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,10 +36,18 @@ public class TransactionServiceTest {
     private String description;
     private Transaction transaction1;
     private Transaction transaction2;
+    private List<Transaction> transactions;
+
+
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
 
     @BeforeEach
     void setUp() {
+
+
+        System.setOut(new PrintStream(outContent));
+
 
         transactionRepository = Mockito.mock(TransactionRepositoryInterface.class);
         transactionService = new TransactionService(transactionRepository);
@@ -58,9 +65,9 @@ public class TransactionServiceTest {
         transaction2 = new Transaction(transaction2_Id, userId, TransactionType.EXPENSE, BigDecimal.valueOf(50),
                 "Food", LocalDate.now(), "Lunch");
 
+        transactions = Arrays.asList(transaction1,transaction2);
 
     }
-
 
     @Test
     public void addTransaction_ShouldAddTransaction() {
@@ -71,7 +78,6 @@ public class TransactionServiceTest {
 
         ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
         verify(transactionRepository).addTransaction(transactionCaptor.capture());
-
 
         Transaction capturedTransaction = transactionCaptor.getValue();
 
@@ -88,13 +94,10 @@ public class TransactionServiceTest {
 
         when(transactionRepository.getUserTransactions(userId)).thenReturn(List.of());
 
-
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
 
-
         transactionService.showUserTransactions(userId);
-
 
         assertTrue(outputStream.toString().contains("У вас нет записей."));
     }
@@ -117,16 +120,107 @@ public class TransactionServiceTest {
 
     @Test
     public void deleteTransaction_ShouldDeleteTransactionAndPrintMessage() {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream(outputStream);
-        System.setOut(printStream);
-
-
-        transactionService.deleteTransaction(userId, transaction1_Id);
-
+        when(transactionRepository.deleteTransaction(userId, transaction1_Id)).thenReturn(true);
+        boolean result = transactionService.deleteTransaction(userId, transaction1_Id);
+        assertThat(result).isTrue();
         verify(transactionRepository, times(1)).deleteTransaction(userId, transaction1_Id);
-
-
     }
+
+    @Test
+    void shouldUpdateTransactionWhenTransactionExists() {
+        when(transactionRepository.upgradeTransaction(userId, transaction1_Id, transaction2)).thenReturn(true);
+        boolean result = transactionService.updateTransaction(userId, transaction1_Id, transaction2);
+        assertThat(result).isTrue();
+        verify(transactionRepository, times(1)).upgradeTransaction(userId, transaction1_Id, transaction2);
+    }
+    @Test
+    void shouldNotUpdateTransactionWhenTransactionDoesNotExist() {
+        when(transactionRepository.upgradeTransaction(userId, transaction1_Id, transaction2)).thenReturn(false);
+        boolean result = transactionService.updateTransaction(userId, transaction1_Id, transaction2);
+        assertThat(result).isFalse();
+        verify(transactionRepository, times(0)).upgradeTransaction(userId, transaction1_Id, transaction1);
+    }
+
+
+    @Test
+    void shouldReturnTotalIncomeAfterDate() {
+        // Настроим мок репозитория для возвращения списка с транзакциями
+        List<Transaction> transactions = Arrays.asList(transaction1, transaction2);
+        when(transactionRepository.getUserTransactions(userId)).thenReturn(transactions);
+        double totalIncome = transactionService.getTotalIncome(userId, LocalDate.of(2025, 3, 1));
+        assertThat(totalIncome).isEqualTo(100);
+    }
+
+    @Test
+    void shouldReturnZeroIncomeIfNoIncomeTransactions() {
+        List<Transaction> transactions = Collections.singletonList(transaction2);
+        when(transactionRepository.getUserTransactions(userId)).thenReturn(transactions);
+        double totalIncome = transactionService.getTotalIncome(userId, LocalDate.of(2025, 3, 1));
+        assertThat(totalIncome).isEqualTo(0.0);
+    }
+
+    @Test
+    void shouldReturnZeroIncomeIfTransactionsBeforeDate() {
+        List<Transaction> transactions = Arrays.asList(transaction1, transaction2);
+        when(transactionRepository.getUserTransactions(userId)).thenReturn(transactions);
+        double totalIncome = transactionService.getTotalIncome(userId, LocalDate.of(2025, 8, 15));
+        assertThat(totalIncome).isEqualTo(0.0);
+    }
+
+    @Test
+    void shouldReturnTotalIncomeWithEmptyTransactionList() {
+        when(transactionRepository.getUserTransactions(userId)).thenReturn(Arrays.asList());
+        double totalIncome = transactionService.getTotalIncome(userId, LocalDate.of(2025, 3, 1));
+        assertThat(totalIncome).isEqualTo(0.0);
+    }
+    @Test
+    void shouldReturnTotalExpensesAfterDate() {
+        List<Transaction> transactions = Arrays.asList(transaction1, transaction2);
+        when(transactionRepository.getUserTransactions(userId)).thenReturn(transactions);
+        double totalExpenses = transactionService.getTotalExpenses(userId, LocalDate.of(2025, 3, 1));
+        assertThat(totalExpenses).isEqualTo(50);
+    }
+
+    @Test
+    void shouldReturnZeroExpensesIfNoExpenseTransactions() {
+        List<Transaction> transactions = Arrays.asList(transaction1);
+        when(transactionRepository.getUserTransactions(userId)).thenReturn(transactions);
+        double totalExpenses = transactionService.getTotalExpenses(userId, LocalDate.of(2025, 3, 1));
+        assertThat(totalExpenses).isEqualTo(0.0);
+    }
+
+    @Test
+    void shouldReturnZeroExpensesIfTransactionsBeforeDate() {
+        List<Transaction> transactions = Arrays.asList(transaction1, transaction2);
+        when(transactionRepository.getUserTransactions(userId)).thenReturn(transactions);
+
+        double totalExpenses = transactionService.getTotalExpenses(userId, LocalDate.of(2025, 3, 15));
+
+        assertThat(totalExpenses).isEqualTo(0.0);
+    }
+
+    @Test
+    void shouldReturnTotalExpensesWithEmptyTransactionList() {
+        when(transactionRepository.getUserTransactions(userId)).thenReturn(Arrays.asList());
+        double totalExpenses = transactionService.getTotalExpenses(userId, LocalDate.of(2025, 3, 1));
+        assertThat(totalExpenses).isEqualTo(0.0);
+    }
+    @Test
+    void shouldReturnCorrectExpensesByCategory() {
+        when(transactionRepository.getUserTransactions(userId)).thenReturn(transactions);
+
+        Map<String, Double> result = transactionService.getExpensesByCategory(userId, LocalDate.of(2025, 3, 1));
+
+        assertThat(result).containsEntry("Food", 50.00);
+        assertThat(result).doesNotContainKey("Salary");
+    }
+    @Test
+    public void shouldPrintTotalExpensesByCategory() {
+        when(transactionRepository.getUserTransactions(userId)).thenReturn(transactions);
+        transactionService.getExpensesBySpecificCategory(userId,"Food", LocalDate.of(2025, 3, 1));
+        String output = outContent.toString().trim();
+        assertThat(output).contains("Сумма расходов по категории: Food| 50.0");
+    }
+
 
 }

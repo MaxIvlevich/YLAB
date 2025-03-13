@@ -81,7 +81,9 @@ public class TransactionRepository implements TransactionRepositoryInterface {
     public boolean deleteTransaction(UUID uuid, UUID transactionId) {
         List<Transaction> userTransactions = transactions.get(uuid);
         if (userTransactions != null) {
+            System.out.println("Транзакция удалена " + transactionId);
             return userTransactions.removeIf(t -> t.getTransactionUUID().equals(transactionId));
+
         }
         return false;
     }

@@ -22,7 +22,7 @@ public class User {
     private Roles roles;
     private Status status;
     public User(String name, String email, String password,Roles roles,Status status) {
-        this.userId = UUID.randomUUID();  // Генерация уникального ID
+        this.userId = UUID.randomUUID();
         this.name = name;
         this.email = email;
         this.password = password;
