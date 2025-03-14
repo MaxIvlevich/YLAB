@@ -1,14 +1,12 @@
 package HW_1_Tests;
 
-import org.example.homework_1.models.User;
 import org.example.homework_1.models.Wallet;
-import org.example.homework_1.models.enums.Roles;
-import org.example.homework_1.models.enums.Status;
-import org.example.homework_1.repository.UserRepository;
-import org.example.homework_1.repository.WalletRepository;
+import org.example.homework_1.repository.RepositoryInMap.WalletRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Spy;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,14 +16,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class WalletRepositoryTests {
     private  WalletRepository walletRepository;
-    private Map<UUID, Wallet> wallets ;
+    @Spy
+    private  Map<UUID, Wallet> userWallets = new HashMap<>();
 
     private UUID userId;
 
     @BeforeEach
-    void setUp() {
-        wallets = new HashMap<>();
-        walletRepository = new WalletRepository(wallets);
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
+        walletRepository = new WalletRepository();
+
+        Field field = WalletRepository.class.getDeclaredField("userWallets");
+        field.setAccessible(true);
+        field.set(walletRepository, userWallets);
+
         userId = UUID.randomUUID();
 
     }
@@ -82,8 +85,7 @@ public class WalletRepositoryTests {
         String goalName = "Покупка нового ноутбука";
         BigDecimal targetAmount = BigDecimal.valueOf(50000);
         walletRepository.addGoal(userId, goalName, targetAmount);
-        Wallet wallet = wallets.get(userId);
-        assertNotNull(wallet);
+        Wallet wallet = userWallets.get(userId);
         assertTrue(wallet.getSavingsGoals().containsKey(goalName));
         assertEquals(targetAmount, wallet.getSavingsGoals().get(goalName));
     }

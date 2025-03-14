@@ -2,14 +2,14 @@ package HW_1_Tests;
 
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.enums.TransactionType;
-import org.example.homework_1.repository.TransactionRepository;
+import org.example.homework_1.repository.RepositoryInMap.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class TransactionRepositoryTests {
     @Spy
-    private Map<UUID, List<Transaction>> transactions = new HashMap<>();
+    private  Map<UUID, List<Transaction>> transactions = new HashMap<>();
     private TransactionRepository transactionRepository;
     private Transaction transaction1;
     private Transaction transaction2;
@@ -29,16 +29,21 @@ public class TransactionRepositoryTests {
 
 
     @BeforeEach
-    void SetUp() {
-        MockitoAnnotations.openMocks(this);
-        transactionRepository = new TransactionRepository(transactions);
+    void SetUp() throws NoSuchFieldException, IllegalAccessException {
+        transactionRepository = new TransactionRepository();
+
+
+        Field field = TransactionRepository.class.getDeclaredField("transactions");
+        field.setAccessible(true);
+        field.set(transactionRepository, transactions);
+
+
         userId = UUID.randomUUID();
         transactionUUID = UUID.randomUUID();
         transaction1 = new Transaction(transactionUUID, userId, TransactionType.INCOME, BigDecimal.valueOf(100),
                 "Salary", LocalDate.now(), "Monthly salary");
         transaction2 = new Transaction(UUID.randomUUID(), userId, TransactionType.EXPENSE, BigDecimal.valueOf(50),
                 "Food", LocalDate.now(), "Lunch");
-
     }
 
     @Test
@@ -77,7 +82,8 @@ public class TransactionRepositoryTests {
 
     @Test
     void testGetUserExpenseTransactions() {
-        when(transactions.get(userId)).thenReturn(Arrays.asList(transaction1, transaction2));
+        //when(transactions.get(userId)).thenReturn(Arrays.asList(transaction1, transaction2));
+        transactions.put(userId,Arrays.asList(transaction1, transaction2));
         List<Transaction> result = transactionRepository.getUserExpenseTransactions(userId);
         assertNotNull(result);
         assertEquals(1, result.size());

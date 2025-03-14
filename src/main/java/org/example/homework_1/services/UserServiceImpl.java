@@ -3,7 +3,6 @@ package org.example.homework_1.services;
 import org.example.homework_1.models.User;
 import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
-import org.example.homework_1.repository.UserRepository;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
 

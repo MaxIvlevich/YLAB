@@ -1,17 +1,16 @@
-package org.example.homework_1.controllers;
+package org.example.homework_1.app;
 
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.User;
-import org.example.homework_1.models.Wallet;
 import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
 import org.example.homework_1.models.enums.TransactionType;
 import org.example.homework_1.repository.RepositiryInterfaces.TransactionRepositoryInterface;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
 import org.example.homework_1.repository.RepositiryInterfaces.WalletRepositoryInterface;
-import org.example.homework_1.repository.TransactionRepository;
-import org.example.homework_1.repository.UserRepository;
-import org.example.homework_1.repository.WalletRepository;
+import org.example.homework_1.repository.RepositoryInMap.TransactionRepository;
+import org.example.homework_1.repository.RepositoryInMap.UserRepository;
+import org.example.homework_1.repository.RepositoryInMap.WalletRepository;
 import org.example.homework_1.services.*;
 import org.example.homework_1.services.Interfaces.*;
 import org.example.homework_1.util.StringKeeper;
@@ -24,17 +23,17 @@ import java.util.*;
 import static org.example.homework_1.models.enums.TransactionType.EXPENSE;
 import static org.example.homework_1.models.enums.TransactionType.INCOME;
 
-public class MainController {
-    private final Map<UUID, List<Transaction>> transactions = new HashMap<>();
-    private final Map<UUID, User> users = new HashMap<>();
-    private final Map<UUID, Wallet> userWallets = new HashMap<>();
+public class App {
+   //private final Map<UUID, List<Transaction>> transactions = new HashMap<>();
+   //private final Map<UUID, User> users = new HashMap<>();
+   //private final Map<UUID, Wallet> userWallets = new HashMap<>();
     private  final Scanner scanner = new Scanner(System.in);
-    private final UserRepositoryInterface userRepositoryInterface = new UserRepository(users);
+    private final UserRepositoryInterface userRepositoryInterface = new UserRepository();
     private  final UserServiceInterface userService = new UserServiceImpl(userRepositoryInterface);
     private  final StringKeeperInterface stringKeeperInter = new StringKeeper();
     private  final EmailServiceInterface emailService = new EmailService();
-    private  final WalletRepositoryInterface walletRepository = new WalletRepository(userWallets);
-    private  final TransactionRepositoryInterface transactionRepository = new TransactionRepository(transactions);
+    private  final WalletRepositoryInterface walletRepository = new WalletRepository();
+    private  final TransactionRepositoryInterface transactionRepository = new TransactionRepository();
     private  final WalletServiceInterface walletService = new WalletServiceImpl(walletRepository, transactionRepository, emailService, userService);
     private  final TransactionServiceInterface transactionService = new TransactionService(transactionRepository);
     private  final InformationServiceInterface informationService = new InformationServiceImpl(transactionService, walletService);

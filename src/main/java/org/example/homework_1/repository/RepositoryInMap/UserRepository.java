@@ -1,4 +1,4 @@
-package org.example.homework_1.repository;
+package org.example.homework_1.repository.RepositoryInMap;
 
 import org.example.homework_1.models.User;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
@@ -12,11 +12,9 @@ import java.util.*;
  * This implementation stores users in an in-memory map, but can be adapted to use a database.
  */
 public class UserRepository implements UserRepositoryInterface {
-    private Map<UUID, User> users;
+    private final Map<UUID, User> users = new HashMap<>();
 
-    public UserRepository(Map<UUID, User> users) {
-        this.users=users;
-    }
+
 
     /**
      * adds a user to the repository

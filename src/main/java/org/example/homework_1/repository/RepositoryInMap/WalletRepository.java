@@ -1,4 +1,4 @@
-package org.example.homework_1.repository;
+package org.example.homework_1.repository.RepositoryInMap;
 
 import org.example.homework_1.models.Wallet;
 import org.example.homework_1.repository.RepositiryInterfaces.WalletRepositoryInterface;
@@ -12,11 +12,9 @@ import java.util.UUID;
  * a repository for wallet management
  */
 public class WalletRepository implements WalletRepositoryInterface {
-    private final Map<UUID, Wallet> userWallets ;
+    private final Map<UUID, Wallet> userWallets = new HashMap<>();
 
-    public WalletRepository(Map<UUID, Wallet> userWallets) {
-        this.userWallets = userWallets;
-    }
+
 
     /**
      * the method that initializes the wallet for the new user

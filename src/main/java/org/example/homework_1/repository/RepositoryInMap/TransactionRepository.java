@@ -1,4 +1,4 @@
-package org.example.homework_1.repository;
+package org.example.homework_1.repository.RepositoryInMap;
 
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.enums.TransactionType;
@@ -12,14 +12,12 @@ import java.util.*;
  *
  */
 public class TransactionRepository implements TransactionRepositoryInterface {
-    private final Map<UUID, List<Transaction>> transactions;
 
-    public TransactionRepository(Map<UUID, List<Transaction>> transactions) {
-        this.transactions = transactions;
-    }
+    private final Map<UUID, List<Transaction>> transactions = new HashMap<>();
+
+
     /**
      * Adds a new transaction to the user's transaction list.
-     *
      * This method adds a given transaction to the list of transactions for the user. If the user does not yet have any
      * transactions, a new list is created and the transaction is added to it. The transaction is stored in a map, with the
      * user's UUID as the key and a list of transactions as the value.
