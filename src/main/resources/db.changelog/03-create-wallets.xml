@@ -5,31 +5,24 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
 
-    <changeSet id="01-create-schema" author="max">
-        <sql>
-            CREATE SCHEMA IF NOT EXISTS app;
-        </sql>
-    </changeSet>
+    <changeSet id="03-create-wallets" author="max">
+        <createSequence sequenceName="wallets_id_seq" schemaName="app"/>
 
-    <changeSet id="02-create-users" author="max">
-        <createSequence sequenceName="users_id_seq" schemaName="app"/>
-        <createTable tableName="users" schemaName="app">
+        <createTable tableName="wallets" schemaName="app">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(100)">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_wallets_users"
+                             references="app.users(id)"/>
+            </column>
+            <column name="amount" type="DECIMAL(15,2)" defaultValue="0.0">
                 <constraints nullable="false"/>
             </column>
-            <column name="email" type="VARCHAR(255)">
+            <column name="monthly_budget" type="DECIMAL(15,2)" defaultValue="0.0">
                 <constraints nullable="false"/>
             </column>
-            <column name="password" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="roles" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status" type="VARCHAR(50)">
+            <column name="last_updated" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
         </createTable>

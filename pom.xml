@@ -16,6 +16,7 @@
         <mockito.version>5.11.0</mockito.version>
         <assertj.version>3.26.3</assertj.version>
         <postgresql.version>42.5.6</postgresql.version>
+        <liquibase.version>4.8.0</liquibase.version>
     </properties>
     <!-- Util-->
     <dependencies>
@@ -25,7 +26,6 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
-
         <!-- Tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -51,15 +51,18 @@
             <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
-
         <!-- PostgreSQL JDBC Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
         </dependency>
-
-
+        <!--liquibase  -->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

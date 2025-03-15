@@ -1,5 +1,7 @@
 package org.example.homework_1.app;
 
+import org.example.homework_1.database.ConfigReader;
+import org.example.homework_1.database.LiquibaseMigration;
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.User;
 import org.example.homework_1.models.enums.Roles;
@@ -16,6 +18,7 @@ import org.example.homework_1.services.Interfaces.*;
 import org.example.homework_1.util.StringKeeper;
 import org.example.homework_1.util.interfaces.StringKeeperInterface;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
@@ -39,8 +42,16 @@ public class App {
     private  final InformationServiceInterface informationService = new InformationServiceImpl(transactionService, walletService);
     private  User currentUser = null;
     private  UUID userId = null;
-    public void startApp(){
+    public void startApp()  {
         while (true) {
+            ConfigReader configReader = null; // Читаем конфиг
+            try {
+                configReader = new ConfigReader("src/main/resources/config.properties");
+                LiquibaseMigration.runMigration(configReader);  // Запускаем миграции
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
             if (currentUser == null) {
                 showAuthMenu();
             } else {
