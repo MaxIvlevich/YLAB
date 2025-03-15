@@ -1,18 +1,19 @@
 package org.example.homework_1.app;
 
 import org.example.homework_1.database.ConfigReader;
+import org.example.homework_1.database.DatabaseConfig;
 import org.example.homework_1.database.LiquibaseMigration;
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.User;
 import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
 import org.example.homework_1.models.enums.TransactionType;
+import org.example.homework_1.repository.JDBCRepositoryes.TransactionRepositoryJDBC;
+import org.example.homework_1.repository.JDBCRepositoryes.UserRepositoryJDBC;
+import org.example.homework_1.repository.JDBCRepositoryes.WalletRepositoryJDBC;
 import org.example.homework_1.repository.RepositiryInterfaces.TransactionRepositoryInterface;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
 import org.example.homework_1.repository.RepositiryInterfaces.WalletRepositoryInterface;
-import org.example.homework_1.repository.RepositoryInMap.TransactionRepository;
-import org.example.homework_1.repository.RepositoryInMap.UserRepository;
-import org.example.homework_1.repository.RepositoryInMap.WalletRepository;
 import org.example.homework_1.services.*;
 import org.example.homework_1.services.Interfaces.*;
 import org.example.homework_1.util.StringKeeper;
@@ -20,45 +21,69 @@ import org.example.homework_1.util.interfaces.StringKeeperInterface;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 
 import static org.example.homework_1.models.enums.TransactionType.EXPENSE;
 import static org.example.homework_1.models.enums.TransactionType.INCOME;
 
 public class App {
-   //private final Map<UUID, List<Transaction>> transactions = new HashMap<>();
-   //private final Map<UUID, User> users = new HashMap<>();
-   //private final Map<UUID, Wallet> userWallets = new HashMap<>();
+    ConfigReader configReader = new ConfigReader("src/main/resources/config.properties");
+    Connection connection ;
     private  final Scanner scanner = new Scanner(System.in);
-    private final UserRepositoryInterface userRepositoryInterface = new UserRepository();
-    private  final UserServiceInterface userService = new UserServiceImpl(userRepositoryInterface);
+    private TransactionRepositoryInterface transactionRepository;
     private  final StringKeeperInterface stringKeeperInter = new StringKeeper();
     private  final EmailServiceInterface emailService = new EmailService();
-    private  final WalletRepositoryInterface walletRepository = new WalletRepository();
-    private  final TransactionRepositoryInterface transactionRepository = new TransactionRepository();
-    private  final WalletServiceInterface walletService = new WalletServiceImpl(walletRepository, transactionRepository, emailService, userService);
-    private  final TransactionServiceInterface transactionService = new TransactionService(transactionRepository);
-    private  final InformationServiceInterface informationService = new InformationServiceImpl(transactionService, walletService);
+    private   UserServiceInterface userService;
+    private   WalletServiceInterface walletService;
+    private  TransactionServiceInterface transactionService;
+    private   InformationServiceInterface informationService;
     private  User currentUser = null;
-    private  UUID userId = null;
-    public void startApp()  {
-        while (true) {
-            ConfigReader configReader = null; // Читаем конфиг
-            try {
-                configReader = new ConfigReader("src/main/resources/config.properties");
-                LiquibaseMigration.runMigration(configReader);  // Запускаем миграции
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
-            if (currentUser == null) {
-                showAuthMenu();
-            } else {
-                showMainMenu();
-            }
-        }
+    private  Long userId = null;
+    public App() throws IOException {
     }
+
+    public void startApp() {
+        try {
+             connection = DatabaseConfig.getConnection(configReader);
+            LiquibaseMigration.runMigration(configReader);
+            if(connection!=null){
+                System.out.println(" Есть соединение ");
+            }
+            UserRepositoryInterface userRepositoryInterface = new UserRepositoryJDBC(connection);
+            WalletRepositoryInterface walletRepository = new WalletRepositoryJDBC(connection);
+            transactionRepository = new TransactionRepositoryJDBC(connection);
+            userService = new UserServiceImpl(userRepositoryInterface);
+            walletService = new WalletServiceImpl(walletRepository, transactionRepository, emailService, userService);
+            transactionService = new TransactionService(transactionRepository);
+            informationService = new InformationServiceImpl(transactionService, walletService);
+
+            while (true) {
+                if (currentUser == null) {
+                    showAuthMenu();
+                } else {
+                    showMainMenu();
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+
+       }
+           finally {
+               try {
+                   if (connection != null && !connection.isClosed()) {
+                       DatabaseConfig.closeConnection();
+                   }
+               } catch (SQLException e) {
+                   e.printStackTrace();
+               }
+           }
+     }
+
 
 
     public  void showMainMenu() {
@@ -102,9 +127,7 @@ public class App {
         } else {
             userManage(users, choice);
         }
-
     }
-
     private  void userManage(List<User> users, int choice) {
         User user = users.get(choice - 1);
         System.out.println(" Выбран пользователь " + user.getName());

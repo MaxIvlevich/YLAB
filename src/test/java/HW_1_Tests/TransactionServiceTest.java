@@ -27,9 +27,9 @@ public class TransactionServiceTest {
 
     private TransactionRepositoryInterface transactionRepository;
     private TransactionService transactionService;
-    private UUID userId;
-    private UUID transaction1_Id;
-    private UUID transaction2_Id;
+    private Long userId;
+    private Long transaction1_Id;
+    private Long transaction2_Id;
     private TransactionType transactionType;
     private BigDecimal amount;
     private String category;
@@ -52,9 +52,9 @@ public class TransactionServiceTest {
         transactionRepository = Mockito.mock(TransactionRepositoryInterface.class);
         transactionService = new TransactionService(transactionRepository);
 
-        userId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
-        transaction1_Id = UUID.fromString("d9bff720-ccc7-491d-b4ec-fa71b21d2752");
-        transaction2_Id = UUID.fromString("145d8128-7d65-4c06-873d-2739e619e0d0");
+        userId =1L;
+        transaction1_Id = 1L;
+        transaction2_Id = 2L;
         transactionType = TransactionType.INCOME;
         amount = BigDecimal.valueOf(100);
         category = "Salary";

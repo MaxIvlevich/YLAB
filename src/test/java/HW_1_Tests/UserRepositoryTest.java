@@ -18,9 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserRepositoryTest {
     @Spy
-    private Map<UUID, User> users = new HashMap<>();
+    private Map<Long, User> users = new HashMap<>();
     private UserRepository userRepository;
-    private UUID userId;
+    private Long userId;
     private User user;
 
 
@@ -32,7 +32,7 @@ public class UserRepositoryTest {
         field.setAccessible(true);
         field.set(userRepository, users);
 
-        userId = UUID.randomUUID();
+         userId = 1L;
         user = new User(userId, "Alice", "alice@example.com", "password", Roles.ROLE_USER, Status.STATUS_ACTIVE);
     }
 
@@ -62,7 +62,7 @@ public class UserRepositoryTest {
     @Test
     void testGetUserById_UserNotFound() {
         users.put(userId, user);
-        UUID nonExistentId = UUID.randomUUID();
+        Long nonExistentId = 3L;
         User result = userRepository.getUserById(nonExistentId);
         assertNull(result);
     }
@@ -91,7 +91,7 @@ public class UserRepositoryTest {
 
     @Test
     void testDeleteUser_UserNotFound() {
-        UUID nonExistentUserId = UUID.randomUUID();
+        Long nonExistentUserId = 1L;
         assertFalse(users.containsKey(nonExistentUserId));
         userRepository.deleteUser(nonExistentUserId);
         assertFalse(users.containsKey(nonExistentUserId));

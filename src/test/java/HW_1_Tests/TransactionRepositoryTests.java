@@ -20,12 +20,12 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class TransactionRepositoryTests {
     @Spy
-    private  Map<UUID, List<Transaction>> transactions = new HashMap<>();
+    private  Map<Long, List<Transaction>> transactions = new HashMap<>();
     private TransactionRepository transactionRepository;
     private Transaction transaction1;
     private Transaction transaction2;
-    private UUID userId;
-    private UUID transactionUUID;
+    private Long userId;
+    private Long transactionUUID;
 
 
     @BeforeEach
@@ -38,11 +38,11 @@ public class TransactionRepositoryTests {
         field.set(transactionRepository, transactions);
 
 
-        userId = UUID.randomUUID();
-        transactionUUID = UUID.randomUUID();
+        userId = 1L;
+        transactionUUID = 2L;
         transaction1 = new Transaction(transactionUUID, userId, TransactionType.INCOME, BigDecimal.valueOf(100),
                 "Salary", LocalDate.now(), "Monthly salary");
-        transaction2 = new Transaction(UUID.randomUUID(), userId, TransactionType.EXPENSE, BigDecimal.valueOf(50),
+        transaction2 = new Transaction(3L, userId, TransactionType.EXPENSE, BigDecimal.valueOf(50),
                 "Food", LocalDate.now(), "Lunch");
     }
 
@@ -65,7 +65,6 @@ public class TransactionRepositoryTests {
 
     @Test
     void testGetUserTransactions_NoTransactions() {
-        UUID userId = UUID.randomUUID();
         List<Transaction> result = transactionRepository.getUserTransactions(userId);
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -103,8 +102,8 @@ public class TransactionRepositoryTests {
 
     @Test
     void testDeleteTransaction_TransactionNotFound() {
-        UUID userId = UUID.randomUUID();
-        UUID transactionId = UUID.randomUUID();
+        Long userId = 1L;
+        Long transactionId = 2L;
         when(transactions.get(userId)).thenReturn(null);
         boolean result = transactionRepository.deleteTransaction(userId, transactionId);
         assertFalse(result);

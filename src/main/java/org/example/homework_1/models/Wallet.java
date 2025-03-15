@@ -17,18 +17,25 @@ import java.util.UUID;
  */
 @Data
 public class Wallet {
-    private UUID userId;
+    private Long userId;
     private double amount;
     private double monthlyBudget;
     private Map<String, BigDecimal> savingsGoals;
     private LocalDateTime lastUpdated;
 
-    public Wallet(UUID userId){
+    public Wallet(Long userId){
         this.userId = userId;
         this.amount = 0.0;
         this.monthlyBudget = 0.0;
         this.savingsGoals = new HashMap<>();
         this.lastUpdated = LocalDateTime.now();
+    }
+
+    public Wallet(Long userId, double amount, double monthlyBudget, Map<String, BigDecimal> savingsGoals) {
+        this.userId = userId;
+        this.amount = amount;
+        this.monthlyBudget = monthlyBudget;
+        this.savingsGoals = savingsGoals;
     }
 
     /**

@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserServiceInterface {
      * @return True if the user is deleted
      */
     @Override
-    public boolean deleteUser(UUID userId) {
+    public boolean deleteUser(Long userId) {
         if (userRepositoryInterface.getUserById(userId) != null) {
             userRepositoryInterface.deleteUser(userId);
             System.out.println("Пользователь удален");
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserServiceInterface {
      * @return The email address of the user.
      */
     @Override
-    public String getUserEmail(UUID userId) {
+    public String getUserEmail(Long userId) {
         return userRepositoryInterface.getUserById(userId).getEmail();
     }
     /**

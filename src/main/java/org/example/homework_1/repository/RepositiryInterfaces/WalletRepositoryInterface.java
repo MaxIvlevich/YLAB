@@ -7,20 +7,20 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface WalletRepositoryInterface {
-    void initializeWallet(UUID userId);
+    void initializeWallet(Long userId);
 
-    void setBudget(UUID userId, double budget);
+    void setBudget(Long userId, double budget);
 
-    double getBudget(UUID userId);
+    double getBudget(Long userId);
 
-    void addGoal(UUID userId, String goalName, BigDecimal targetAmount);
+    void addGoal(Long userId, String goalName, BigDecimal targetAmount);
 
-    Map<String, BigDecimal> getUserGoals(UUID userId);
+    Map<String, BigDecimal> getUserGoals(Long userId);
 
-    boolean isGoalAchieved(UUID userId, String goalName, BigDecimal balance);
+    boolean isGoalAchieved(Long userId, String goalName, BigDecimal balance);
 
-    void showGoals(UUID userId, BigDecimal balance);
+    void showGoals(Long userId, BigDecimal balance);
 
-    Wallet getUserWallet(UUID userId);
+    Wallet getUserWallet(Long userId);
 
 }

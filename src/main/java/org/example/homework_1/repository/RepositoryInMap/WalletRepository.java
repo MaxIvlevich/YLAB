@@ -12,7 +12,7 @@ import java.util.UUID;
  * a repository for wallet management
  */
 public class WalletRepository implements WalletRepositoryInterface {
-    private final Map<UUID, Wallet> userWallets = new HashMap<>();
+    private final Map<Long, Wallet> userWallets = new HashMap<>();
 
 
 
@@ -22,7 +22,7 @@ public class WalletRepository implements WalletRepositoryInterface {
      * @param userId unique user ID,UUID value
      */
     @Override
-    public void initializeWallet(UUID userId) {
+    public void initializeWallet(Long userId) {
         userWallets.put(userId, new Wallet(userId));
     }
 
@@ -33,7 +33,7 @@ public class WalletRepository implements WalletRepositoryInterface {
      * @param budget monthly limit ,double value
      */
     @Override
-    public void setBudget(UUID userId, double budget) {
+    public void setBudget(Long userId, double budget) {
         Wallet balance = userWallets.get(userId);
         if (balance != null) {
             balance.setMonthlyBudget(budget);
@@ -47,7 +47,7 @@ public class WalletRepository implements WalletRepositoryInterface {
      * @return current budget,double value
      */
     @Override
-    public double getBudget(UUID userId) {
+    public double getBudget(Long userId) {
         return userWallets.getOrDefault(userId, new Wallet(userId)).getMonthlyBudget();
     }
 
@@ -59,7 +59,7 @@ public class WalletRepository implements WalletRepositoryInterface {
      * @param targetAmount goal amount, double value
      */
     @Override
-    public void addGoal(UUID userId, String goalName, BigDecimal targetAmount) {
+    public void addGoal(Long userId, String goalName, BigDecimal targetAmount) {
         Wallet wallet = userWallets.get(userId);
         if (wallet != null) {
             wallet.addGoal(goalName, targetAmount);
@@ -73,7 +73,7 @@ public class WalletRepository implements WalletRepositoryInterface {
      *         Returns null if the user does not have any wallet or goals.
      */
     @Override
-    public Map<String, BigDecimal> getUserGoals(UUID userId) {
+    public Map<String, BigDecimal> getUserGoals(Long userId) {
         Wallet wallet = userWallets.get(userId);
         if (wallet != null) {
             return wallet.getSavingsGoals();
@@ -89,7 +89,7 @@ public class WalletRepository implements WalletRepositoryInterface {
      * @return true if the goal is completed false otherwise
      */
     @Override
-    public boolean isGoalAchieved(UUID userId, String goalName, BigDecimal balance) {
+    public boolean isGoalAchieved(Long userId, String goalName, BigDecimal balance) {
         BigDecimal goal = userWallets.get(userId).getSavingsGoals().get(goalName);
         return (balance.compareTo(goal) >= 0);
 
@@ -101,7 +101,7 @@ public class WalletRepository implements WalletRepositoryInterface {
      * @param userId unique user ID, UUID value
      */
     @Override
-    public void showGoals(UUID userId, BigDecimal balance) {
+    public void showGoals(Long userId, BigDecimal balance) {
         System.out.println("Ваши цели накоплений:");
         for (Map.Entry<String, BigDecimal> goal : userWallets.get(userId).getSavingsGoals().entrySet()) {
             boolean achieved = isGoalAchieved(userId, goal.getKey(), balance);
@@ -116,7 +116,7 @@ public class WalletRepository implements WalletRepositoryInterface {
      * @return Wallet of this User
      */
     @Override
-    public Wallet getUserWallet(UUID userId) {
+    public Wallet getUserWallet(Long userId) {
        return userWallets.get(userId);
     }
 }

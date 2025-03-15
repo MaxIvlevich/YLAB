@@ -13,9 +13,9 @@ public interface UserServiceInterface {
 
     void updateUser(User updateUser);
 
-    boolean deleteUser(UUID userId);
+    boolean deleteUser(Long userId);
 
-    String getUserEmail(UUID userId);
+    String getUserEmail(Long userId);
 
     List<User> showAllUsers();
 }

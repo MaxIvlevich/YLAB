@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class WalletRepositoryTests {
     private  WalletRepository walletRepository;
     @Spy
-    private  Map<UUID, Wallet> userWallets = new HashMap<>();
+    private  Map<Long, Wallet> userWallets = new HashMap<>();
 
-    private UUID userId;
+    private Long userId;
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -29,7 +29,7 @@ public class WalletRepositoryTests {
         field.setAccessible(true);
         field.set(walletRepository, userWallets);
 
-        userId = UUID.randomUUID();
+        userId = 1L;
 
     }
 

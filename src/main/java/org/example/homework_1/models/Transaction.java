@@ -16,16 +16,23 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class Transaction {
-    private UUID transactionUUID;
-    private UUID userUUID;
+    private Long  transactionUUID;
+    private Long  userUUID;
     private TransactionType type;
     private BigDecimal amount;
     private String category;
     private LocalDate  date;
     private String description;
 
+    public Transaction(Long userUUID, TransactionType type, BigDecimal amount, String category, LocalDate date, String description) {
+        this.userUUID = userUUID;
+        this.type = type;
+        this.amount = amount;
+        this.category = category;
+        this.date = date;
+        this.description = description;
+    }
+    public Transaction(){
 
-
-
-
+    }
 }

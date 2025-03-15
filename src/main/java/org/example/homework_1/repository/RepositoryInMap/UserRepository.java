@@ -12,7 +12,7 @@ import java.util.*;
  * This implementation stores users in an in-memory map, but can be adapted to use a database.
  */
 public class UserRepository implements UserRepositoryInterface {
-    private final Map<UUID, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
 
 
 
@@ -27,7 +27,7 @@ public class UserRepository implements UserRepositoryInterface {
     }
 
     @Override
-    public User getUserById(UUID userId) {
+    public User getUserById(Long userId) {
         return users.get(userId);
     }
 
@@ -51,7 +51,7 @@ public class UserRepository implements UserRepositoryInterface {
      * @param userId unique user ID
      */
     @Override
-    public void deleteUser(UUID userId) {
+    public void deleteUser(Long userId) {
         users.remove(userId);
     }
 

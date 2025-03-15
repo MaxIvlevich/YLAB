@@ -28,14 +28,14 @@ public class UserServiceTest {
     private User user;
     private User userToUpdate;
     private User userBanned;
-    private UUID userId;
+    private Long userId;
 
     @BeforeEach
     void setUp() {
         userRepository = Mockito.mock(UserRepositoryInterface.class);
         userServiceImpl = new UserServiceImpl(userRepository);
 
-        userId = UUID.randomUUID();
+        userId = 1L;
 
 
         user = new User("name", "email", "pass", Roles.ROLE_USER, Status.STATUS_ACTIVE);
