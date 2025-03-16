@@ -4,10 +4,8 @@ import org.example.homework_1.models.Wallet;
 import org.example.homework_1.repository.RepositiryInterfaces.WalletRepositoryInterface;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,9 +18,10 @@ public class WalletRepositoryJDBC implements WalletRepositoryInterface {
     }
     @Override
     public void initializeWallet(Long userId) {
-        String sql = "INSERT INTO app.wallets (user_id, balance, monthly_budget) VALUES (?, 0, 0)";
+        String sql = "INSERT INTO app.wallets (user_id, balance, monthly_budget,last_updated) VALUES (?, 0, 0,?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, userId);
+            stmt.setTimestamp(2, Timestamp.from(Instant.now()));
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -6,7 +6,7 @@
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
 
     <changeSet id="03-create-wallets" author="max">
-        <createSequence sequenceName="wallets_id_seq" schemaName="app"/>
+        <createSequence sequenceName="app.wallets_id_seq" schemaName="app"/>
 
         <createTable tableName="wallets" schemaName="app">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -23,6 +23,23 @@
                 <constraints nullable="false"/>
             </column>
             <column name="last_updated" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="04-create-goals" author="max">
+        <createTable tableName="goals" schemaName="app">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_goals_user" references="app.users(id)"/>
+            </column>
+            <column name="goal_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="target_amount" type="DECIMAL(10,2)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

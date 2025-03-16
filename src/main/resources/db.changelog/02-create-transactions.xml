@@ -6,7 +6,7 @@
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
 
     <changeSet id="03-create-transactions" author="max">
-        <createSequence sequenceName="transactions_id_seq" schemaName="app"/>
+        <createSequence sequenceName="app.transactions_id_seq" schemaName="app"/>
         <createTable tableName="transactions" schemaName="app">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>

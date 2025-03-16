@@ -18,8 +18,8 @@ public class TransactionRepositoryJDBC implements TransactionRepositoryInterface
 
     @Override
     public void addTransaction(Transaction transaction) {
-        String sql = "INSERT INTO transactions (id, user_id, type, amount, category, date, description) " +
-                "VALUES (nextval('transactions_id_seq'), ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO app.transactions (id, user_id, type, amount, category, date, description) " +
+                "VALUES (nextval('app.transactions_id_seq'), ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, transaction.getUserUUID());
@@ -38,7 +38,7 @@ public class TransactionRepositoryJDBC implements TransactionRepositoryInterface
     @Override
     public List<Transaction> getUserTransactions(Long userId) {
         List<Transaction> transactions = new ArrayList<>();
-        String sql = "SELECT * FROM transactions WHERE user_id = ?";
+        String sql = "SELECT * FROM app.transactions WHERE user_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, userId);
@@ -57,7 +57,7 @@ public class TransactionRepositoryJDBC implements TransactionRepositoryInterface
     @Override
     public List<Transaction> getUserExpenseTransactions(Long userId) {
         List<Transaction> transactions = new ArrayList<>();
-        String sql = "SELECT * FROM transactions WHERE user_id = ? AND type = 'EXPENSE'";
+        String sql = "SELECT * FROM app.transactions WHERE user_id = ? AND type = 'EXPENSE'";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, userId);
@@ -75,7 +75,7 @@ public class TransactionRepositoryJDBC implements TransactionRepositoryInterface
 
     @Override
     public boolean deleteTransaction(Long userId, Long transactionId) {
-        String sql = "DELETE FROM transactions WHERE id = ? AND user_id = ?";
+        String sql = "DELETE FROM app.transactions WHERE id = ? AND user_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, transactionId); // Используем long для transactionId
@@ -89,7 +89,7 @@ public class TransactionRepositoryJDBC implements TransactionRepositoryInterface
     }
     @Override
     public boolean upgradeTransaction(Long userId, Long transactionId, Transaction updatedTransaction) {
-        String sql = "UPDATE transactions SET type = ?, amount = ?, category = ?, date = ?, description = ? " +
+        String sql = "UPDATE app.transactions SET type = ?, amount = ?, category = ?, date = ?, description = ? " +
                 "WHERE id = ? AND user_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {

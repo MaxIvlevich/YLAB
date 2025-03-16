@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserServiceInterface {
         }else {
             User newUser = new User(name, email, password, Roles.USER, Status.ACTIVE);
             userRepositoryInterface.addUser(newUser);
-            System.out.println("Пользователь зарегистрирован! Ваш уникальный ID: " + newUser.getUserId());
+            System.out.println("Пользователь успешно  зарегистрирован! ");
         }
     }
 
