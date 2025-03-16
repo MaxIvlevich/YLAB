@@ -52,7 +52,7 @@ public class App {
              connection = DatabaseConfig.getConnection(configReader);
             LiquibaseMigration.runMigration(configReader);
             if(connection!=null){
-                System.out.println(" Есть соединение ");
+                System.out.println(" connection is open startApp LiquibaseMigration");
             }
             UserRepositoryInterface userRepositoryInterface = new UserRepositoryJDBC(connection);
             WalletRepositoryInterface walletRepository = new WalletRepositoryJDBC(connection);
@@ -61,6 +61,13 @@ public class App {
             walletService = new WalletServiceImpl(walletRepository, transactionRepository, emailService, userService);
             transactionService = new TransactionService(transactionRepository);
             informationService = new InformationServiceImpl(transactionService, walletService);
+            LiquibaseMigration.runMigration(configReader);
+            if(connection!=null){
+                System.out.println(" connection is open startApp");
+            }else {
+                System.out.println("connection is Close startApp");
+            }
+            connection = DatabaseConfig.getConnection(configReader);
 
             while (true) {
                 if (currentUser == null) {
@@ -70,19 +77,10 @@ public class App {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
-
+            e.printStackTrace();
+            throw new RuntimeException("❌ Ошибка при запуске приложения",e);
        }
-           finally {
-               try {
-                   if (connection != null && !connection.isClosed()) {
-                       DatabaseConfig.closeConnection();
-                   }
-               } catch (SQLException e) {
-                   e.printStackTrace();
-               }
-           }
-     }
+    }
 
 
 
@@ -105,7 +103,7 @@ public class App {
             case 7 -> walletService.showBalance(userId);
             case 8 -> transactionMenu();
             case 9 -> {
-                if (currentUser.getRoles().equals(Roles.ROLE_ADMIN)) {
+                if (currentUser.getRoles().equals(Roles.ADMIN)) {
                     adminMenu();
                 } else userMenu();
             }
@@ -138,7 +136,7 @@ public class App {
         int choiceFunction = isCorrectChoice();
         switch (choiceFunction) {
             case 1 -> {
-                user.setStatus(Status.STATUS_BANNED);
+                user.setStatus(Status.BANNED);
                 userService.updateUser(user);
             }
             case 2 -> {
@@ -242,7 +240,7 @@ public class App {
                 }
             }
             case 5 -> {
-                currentUser.setRoles(Roles.ROLE_ADMIN);
+                currentUser.setRoles(Roles.ADMIN);
                 userService.updateUser(currentUser);
             }
 

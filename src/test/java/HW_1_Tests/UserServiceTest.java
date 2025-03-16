@@ -15,7 +15,6 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -38,9 +37,9 @@ public class UserServiceTest {
         userId = 1L;
 
 
-        user = new User("name", "email", "pass", Roles.ROLE_USER, Status.STATUS_ACTIVE);
-        userToUpdate = new User("name1", "email1", "pass1", Roles.ROLE_USER, Status.STATUS_ACTIVE);
-        userBanned = new User("nameBanned", "email1Banned", "pass1Banned", Roles.ROLE_USER, Status.STATUS_BANNED);
+        user = new User("name", "email", "pass", Roles.USER, Status.ACTIVE);
+        userToUpdate = new User("name1", "email1", "pass1", Roles.USER, Status.ACTIVE);
+        userBanned = new User("nameBanned", "email1Banned", "pass1Banned", Roles.USER, Status.BANNED);
 
     }
 
@@ -82,7 +81,7 @@ public class UserServiceTest {
 
     @Test
     void testLogin_UserBanned() {
-        User bannedUser = new User("Banned User", "banned@example.com", "password", Roles.ROLE_USER, Status.STATUS_BANNED);
+        User bannedUser = new User("Banned User", "banned@example.com", "password", Roles.USER, Status.BANNED);
         when(userRepository.getUserByEmail("banned@example.com")).thenReturn(bannedUser);
         Optional<User> result = userServiceImpl.login("banned@example.com", "password");
         assertTrue(result.isEmpty(), "Expected empty Optional because user is banned");
@@ -135,8 +134,8 @@ public class UserServiceTest {
     }
     @Test
     void testShowAllUsers() {
-        User user1 = new User("Alice", "alice@example.com", "password", Roles.ROLE_USER, Status.STATUS_ACTIVE);
-        User user2 = new User("Bob", "bob@example.com", "password", Roles.ROLE_USER, Status.STATUS_ACTIVE);
+        User user1 = new User("Alice", "alice@example.com", "password", Roles.USER, Status.ACTIVE);
+        User user2 = new User("Bob", "bob@example.com", "password", Roles.USER, Status.ACTIVE);
         List<User> users = Arrays.asList(user1, user2);
         when(userRepository.getAllUsers()).thenReturn(users);
         PrintStream originalOut = System.out;

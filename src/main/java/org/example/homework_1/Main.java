@@ -6,7 +6,6 @@ import java.io.IOException;
 
 public class Main {
     static App app;
-
     static {
         try {
             app = new App();
@@ -14,7 +13,6 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
-
     public static void main(String[] args) {
         app.startApp();
     }

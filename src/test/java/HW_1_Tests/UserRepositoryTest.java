@@ -12,7 +12,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,7 +32,7 @@ public class UserRepositoryTest {
         field.set(userRepository, users);
 
          userId = 1L;
-        user = new User(userId, "Alice", "alice@example.com", "password", Roles.ROLE_USER, Status.STATUS_ACTIVE);
+        user = new User(userId, "Alice", "alice@example.com", "password", Roles.USER, Status.ACTIVE);
     }
 
     @Test
@@ -46,7 +45,7 @@ public class UserRepositoryTest {
     @Test
     void testAddUser_AlreadyExists() {
         userRepository.addUser(user);
-        User newUser = new User(userId, "Alice", "alice@example.com", "password", Roles.ROLE_USER, Status.STATUS_ACTIVE);
+        User newUser = new User(userId, "Alice", "alice@example.com", "password", Roles.USER, Status.ACTIVE);
         userRepository.addUser(newUser);
         assertEquals(newUser, users.get(userId));
     }
@@ -100,7 +99,7 @@ public class UserRepositoryTest {
     @Test
     void testUpdateUser_UserExists() {
         users.put(userId, user);
-        User updatedUser = new User(userId, "Max", "Max@example.com", "password112233", Roles.ROLE_USER, Status.STATUS_ACTIVE);
+        User updatedUser = new User(userId, "Max", "Max@example.com", "password112233", Roles.USER, Status.ACTIVE);
         boolean result = userRepository.updateUser(updatedUser);
         assertTrue(result);
         User updatedUserFromRepo = users.get(userId);

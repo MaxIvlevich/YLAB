@@ -11,13 +11,9 @@ import java.sql.Connection;
 public class LiquibaseMigration {
     public static void runMigration(ConfigReader configReader) throws Exception {
         String changeLogFile = "db.changelog/changelog-master.xml";
-        String url = configReader.getLiquibaseUrl();
-        String username = configReader.getLiquibaseUsername();
-        String password = configReader.getLiquibasePassword();
-
-        try (Connection connection = DatabaseConfig.getConnection(configReader)) {
+        try (Connection liquibaseConnection = DatabaseConfig.getLiquibaseConnection(configReader)) {
             Database database = new PostgresDatabase();
-            database.setConnection(new JdbcConnection(connection));
+            database.setConnection(new JdbcConnection(liquibaseConnection));
 
             try (Liquibase liquibase = new Liquibase(changeLogFile,  new ClassLoaderResourceAccessor(), database)) {
 

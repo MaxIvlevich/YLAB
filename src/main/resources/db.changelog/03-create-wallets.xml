@@ -16,7 +16,7 @@
                 <constraints nullable="false" foreignKeyName="fk_wallets_users"
                              references="app.users(id)"/>
             </column>
-            <column name="amount" type="DECIMAL(15,2)" defaultValue="0.0">
+            <column name="balance" type="DECIMAL(15,2)" defaultValue="0.0">
                 <constraints nullable="false"/>
             </column>
             <column name="monthly_budget" type="DECIMAL(15,2)" defaultValue="0.0">

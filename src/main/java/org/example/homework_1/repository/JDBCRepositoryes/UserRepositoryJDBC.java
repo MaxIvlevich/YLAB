@@ -1,15 +1,13 @@
 package org.example.homework_1.repository.JDBCRepositoryes;
 
-import org.example.homework_1.database.DatabaseConfig;
 import org.example.homework_1.models.User;
 import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
 
-import java.util.List;
-import java.util.UUID;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 public class UserRepositoryJDBC implements UserRepositoryInterface {
     private final Connection connection;
 
@@ -19,13 +17,21 @@ public class UserRepositoryJDBC implements UserRepositoryInterface {
     @Override
     public void addUser(User user) {
         String sql = "INSERT INTO app.users (name, email, password, roles, status) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, user.getName());
-            stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPassword());
-            stmt.setString(4, user.getRoles().toString());
-            stmt.setString(5, user.getStatus().toString());
-            stmt.executeUpdate();
+        if(connection==null){
+            System.out.println(" Connection close");
+        }else {
+            System.out.println(" Connection open addUser");
+        }
+        try {
+            assert connection != null;
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, user.getName());
+                stmt.setString(2, user.getEmail());
+                stmt.setString(3, user.getPassword());
+                stmt.setString(4, user.getRoles().toString());
+                stmt.setString(5, user.getStatus().toString());
+                stmt.executeUpdate();
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при добавлении пользователя", e);
         }
@@ -61,11 +67,32 @@ public class UserRepositoryJDBC implements UserRepositoryInterface {
     @Override
     public User getUserByEmail(String email) {
         String sql = "SELECT * FROM app.users WHERE email = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, email);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapUser(rs);
+        if(connection==null){
+            System.out.println("connection == null getUserByEmail");
+        }else {
+            System.out.println("getUserByEmail не 0");
+            System.out.println("🔍 Executing query: " + sql + " with email: " + email);
+        }try {
+            System.out.println("🔍 Проверка состояния соединения: " + connection.isClosed());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            assert connection != null;
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, email);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        System.out.println("✅ Пользователь найден: " + rs.getString("email"));
+                        return mapUser(rs);
+                    }else {
+                        try {
+                            System.out.println("🔍 Проверка состояния соединения: " + connection.isClosed());
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("❌ Пользователь не найден в базе данных");
+                    }
                 }
             }
         } catch (SQLException e) {

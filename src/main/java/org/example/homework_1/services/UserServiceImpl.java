@@ -8,7 +8,6 @@ import org.example.homework_1.services.Interfaces.UserServiceInterface;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -35,7 +34,7 @@ public class UserServiceImpl implements UserServiceInterface {
         if (userRepositoryInterface.getUserByEmail(email) != null) {
             System.out.println("Пользователь с таким email уже существует!");
         }else {
-            User newUser = new User(name, email, password, Roles.ROLE_USER, Status.STATUS_ACTIVE);
+            User newUser = new User(name, email, password, Roles.USER, Status.ACTIVE);
             userRepositoryInterface.addUser(newUser);
             System.out.println("Пользователь зарегистрирован! Ваш уникальный ID: " + newUser.getUserId());
         }
@@ -58,7 +57,7 @@ public class UserServiceImpl implements UserServiceInterface {
             System.out.println("Неверный пароль.");
             return Optional.empty();
         }
-        if (user.getStatus() == Status.STATUS_BANNED) {
+        if (user.getStatus() == Status.BANNED) {
             System.out.println("Вы забанены !!!");
             return Optional.empty();
         }

@@ -2,6 +2,7 @@ package org.example.homework_1.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
     private Long  userId;
     private String name;
