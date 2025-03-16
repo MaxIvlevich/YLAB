@@ -9,7 +9,7 @@
     <!-- Вставка данных в таблицу users -->
     <changeSet id="01-insert-users" author="max">
         <insert tableName="users" schemaName="app">
-            <column name="id" valueSequenceNext="users_id_seq"/>
+            <column name="id" valueSequenceNext="app.users_id_seq"/>
             <column name="name" value="John Doe"/>
             <column name="email" value="johndoe@example.com"/>
             <column name="password" value="hashed_password"/>
@@ -18,7 +18,7 @@
         </insert>
 
         <insert tableName="users" schemaName="app">
-            <column name="id" valueSequenceNext="users_id_seq"/>
+            <column name="id" valueSequenceNext="app.users_id_seq"/>
             <column name="name" value="Jane Smith"/>
             <column name="email" value="janesmith@example.com"/>
             <column name="password" value="hashed_password"/>
@@ -31,14 +31,14 @@
     <changeSet id="02-insert-wallets" author="max">
         <sql>
         <![CDATA[
-            INSERT INTO app.wallets (user_id, amount, monthly_budget, last_updated)
+            INSERT INTO app.wallets (user_id, balance, monthly_budget, last_updated)
             VALUES ((SELECT id FROM app.users WHERE email = 'johndoe@example.com'), '1000.00', '2000.00', '2025-03-15T10:00:00');
             ]]>
     </sql>
 
         <sql>
         <![CDATA[
-            INSERT INTO app.wallets (user_id, amount, monthly_budget, last_updated)
+            INSERT INTO app.wallets (user_id, balance, monthly_budget, last_updated)
             VALUES ((SELECT id FROM app.users WHERE email = 'janesmith@example.com'), '5000.00', '5000.00', '2025-03-15T10:00:00');
             ]]>
     </sql>
@@ -48,17 +48,22 @@
     <changeSet id="03-insert-transactions" author="max">
         <sql>
         <![CDATA[
-            INSERT INTO app.transactions (user_id, type, amount, category, date, description)
+            INSERT INTO app.transactions (user_id, type,  amount, category, date, description)
             VALUES ((SELECT id FROM app.users WHERE email = 'johndoe@example.com'), 'INCOME', '500.00', 'Salary', '2025-03-10', 'Monthly salary');
             ]]>
     </sql>
 
         <sql>
         <![CDATA[
-            INSERT INTO app.transactions (user_id, type, amount, category, date, description)
+            INSERT INTO app.transactions (user_id, type,  amount, category, date, description)
             VALUES ((SELECT id FROM app.users WHERE email = 'janesmith@example.com'), 'EXPENSE', '100.00', 'Groceries', '2025-03-12', 'Supermarket shopping');
             ]]>
     </sql>
+    </changeSet>
+    <changeSet id="04-sync-sequence" author="max">
+        <sql>
+            SELECT setval('app.users_id_seq', (SELECT MAX(id) FROM app.users));
+        </sql>
     </changeSet>
 
 </databaseChangeLog>

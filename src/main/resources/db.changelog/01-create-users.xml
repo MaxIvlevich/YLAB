@@ -12,10 +12,10 @@
     </changeSet>
 
     <changeSet id="02-create-users" author="max">
-        <createSequence sequenceName="users_id_seq" schemaName="app"/>
+        <createSequence sequenceName="app.users_id_seq" schemaName="app" startValue="1" incrementBy="1"/>
         <createTable tableName="users" schemaName="app">
             <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints primaryKey="true" nullable="false" />
             </column>
             <column name="name" type="VARCHAR(100)">
                 <constraints nullable="false"/>
