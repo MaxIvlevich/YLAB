@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import static org.example.homework_1.models.enums.Roles.ADMIN;
 import static org.example.homework_1.models.enums.Roles.USER;
 import static org.example.homework_1.models.enums.Status.ACTIVE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,12 +55,25 @@ public class UserRepositoryJDBCTests {
 
     @Test
     void testAddUser() {
-        User user = new User(null, "John Doe", "john.doe@example.com", "hashed_password", USER, ACTIVE);
+        User user = new User(null, "ylab app", "ylab.app@example.com", "hashed_password", USER, ACTIVE);
         userRepository.addUser(user);
 
-        User fetchedUser = userRepository.getUserByEmail("john.doe@example.com");
+        User fetchedUser = userRepository.getUserByEmail("ylab.app@example.com");
         assertNotNull(fetchedUser);
-        assertEquals("John Doe", fetchedUser.getName());
+        assertEquals("ylab app", fetchedUser.getName());
+    }
+    @Test
+    void testGetUserById() {
+        User user = new User(null, "ylab app", "ylab@example.com", "hashed_password",ADMIN, ACTIVE);
+        userRepository.addUser(user);
+
+        User fetchedUser = userRepository.getUserByEmail("ylab@example.com");
+        assertNotNull(fetchedUser);
+        assertEquals("ylab app", fetchedUser.getName());
+
+        User fetchedById = userRepository.getUserById(fetchedUser.getUserId());
+        assertNotNull(fetchedById);
+        assertEquals("ylab app", fetchedById.getName());
     }
 
 
