@@ -12,11 +12,14 @@ public class DatabaseConfig {
                         String url = configReader.getDbUrl();
                         String username = configReader.getDbUsername();
                         String password = configReader.getDbPassword();
+                        Class.forName("org.postgresql.Driver");
                         connection = DriverManager.getConnection(url, username, password);
                         System.out.println("✅ Открыто новое соединение: " + connection);
                     } catch (SQLException e) {
                         System.err.println("❌ Ошибка при подключении к БД: " + e.getMessage());
                         throw e;
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }

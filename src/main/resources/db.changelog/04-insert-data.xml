@@ -10,8 +10,8 @@
     <changeSet id="01-insert-users" author="max">
         <insert tableName="users" schemaName="app">
             <column name="id" valueSequenceNext="app.users_id_seq"/>
-            <column name="name" value="John Doe"/>
-            <column name="email" value="johndoe@example.com"/>
+            <column name="name" value="maxiv"/>
+            <column name="email" value="maxiv@example.com"/>
             <column name="password" value="hashed_password"/>
             <column name="roles" value="USER"/>
             <column name="status" value="ACTIVE"/>
@@ -19,8 +19,8 @@
 
         <insert tableName="users" schemaName="app">
             <column name="id" valueSequenceNext="app.users_id_seq"/>
-            <column name="name" value="Jane Smith"/>
-            <column name="email" value="janesmith@example.com"/>
+            <column name="name" value="ivmax"/>
+            <column name="email" value="ivmax@example.com"/>
             <column name="password" value="hashed_password"/>
             <column name="roles" value="ADMIN"/>
             <column name="status" value="ACTIVE"/>
@@ -32,14 +32,14 @@
         <sql>
         <![CDATA[
             INSERT INTO app.wallets (user_id, balance, monthly_budget, last_updated)
-            VALUES ((SELECT id FROM app.users WHERE email = 'johndoe@example.com'), '1000.00', '2000.00', '2025-03-15T10:00:00');
+            VALUES ((SELECT id FROM app.users WHERE email = 'ivmax@example.com'), '1000.00', '1000.00', '2025-03-15T10:00:00');
             ]]>
     </sql>
 
         <sql>
         <![CDATA[
             INSERT INTO app.wallets (user_id, balance, monthly_budget, last_updated)
-            VALUES ((SELECT id FROM app.users WHERE email = 'janesmith@example.com'), '5000.00', '5000.00', '2025-03-15T10:00:00');
+            VALUES ((SELECT id FROM app.users WHERE email = 'maxiv@example.com'), '5000.00', '5000.00', '2025-03-15T10:00:00');
             ]]>
     </sql>
     </changeSet>
@@ -49,14 +49,14 @@
         <sql>
         <![CDATA[
             INSERT INTO app.transactions (user_id, type,  amount, category, date, description)
-            VALUES ((SELECT id FROM app.users WHERE email = 'johndoe@example.com'), 'INCOME', '500.00', 'Salary', '2025-03-10', 'Monthly salary');
+            VALUES ((SELECT id FROM app.users WHERE email = 'ivmax@example.com'), 'INCOME', '500.00', 'Salary', '2025-03-10', 'Monthly salary');
             ]]>
     </sql>
 
         <sql>
         <![CDATA[
             INSERT INTO app.transactions (user_id, type,  amount, category, date, description)
-            VALUES ((SELECT id FROM app.users WHERE email = 'janesmith@example.com'), 'EXPENSE', '100.00', 'Groceries', '2025-03-12', 'Supermarket shopping');
+            VALUES ((SELECT id FROM app.users WHERE email = 'maxiv@example.com'), 'EXPENSE', '100.00', 'Groceries', '2025-03-12', 'Supermarket shopping');
             ]]>
     </sql>
     </changeSet>
