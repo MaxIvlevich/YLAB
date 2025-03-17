@@ -81,9 +81,6 @@ public class App {
             throw new RuntimeException("❌ Ошибка при запуске приложения",e);
        }
     }
-
-
-
     public  void showMainMenu() {
         stringKeeperInter.printMenu();
         int choice = isCorrectChoice();
@@ -112,6 +109,7 @@ public class App {
                 System.out.println("Вы вышли из аккаунта.");
                 try {
                     connection.close();
+                    System.out.println("connection.closed");
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

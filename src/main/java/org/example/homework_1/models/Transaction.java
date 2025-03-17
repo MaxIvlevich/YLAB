@@ -35,4 +35,9 @@ public class Transaction {
     public Transaction(){
 
     }
+
+    public Transaction(TransactionType income, BigDecimal valueOf, String salary, LocalDate now, String monthlySalary) {
+
+
+    }
 }
