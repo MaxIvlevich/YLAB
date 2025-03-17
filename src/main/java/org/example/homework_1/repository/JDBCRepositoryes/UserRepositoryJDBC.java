@@ -103,14 +103,15 @@ public class UserRepositoryJDBC implements UserRepositoryInterface {
 
     @Override
     public void deleteUser(Long userId) {
-        String sql = "DELETE FROM app.users WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setLong(1, userId);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if(isUserPresent(userId)){
+            String sql = "DELETE FROM app.users WHERE id = ?";
+                try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                    stmt.setLong(1, userId);
+                    stmt.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
         }
-
     }
 
     @Override
@@ -149,5 +150,7 @@ public class UserRepositoryJDBC implements UserRepositoryInterface {
 
     public boolean isUserPresent(String email){
         return getUserByEmail(email) != null;
+    }public boolean isUserPresent(Long id){
+        return getUserById(id) != null;
     }
 }

@@ -47,6 +47,4 @@ public class DatabaseConfig {
             System.out.println("Соединение с БД закрыто");
         }
     }
-
-
 }

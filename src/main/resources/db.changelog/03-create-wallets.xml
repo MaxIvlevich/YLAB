@@ -14,7 +14,7 @@
             </column>
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="fk_wallets_users"
-                             references="app.users(id)"/>
+                             references="app.users(id)" deleteCascade="true"/>
             </column>
             <column name="balance" type="DECIMAL(15,2)" defaultValue="0.0">
                 <constraints nullable="false"/>
@@ -34,7 +34,8 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="user_id" type="BIGINT">
-                <constraints nullable="false" foreignKeyName="fk_goals_user" references="app.users(id)"/>
+                <constraints nullable="false" foreignKeyName="fk_goals_user"
+                             references="app.users(id)" deleteCascade="true"/>
             </column>
             <column name="goal_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
