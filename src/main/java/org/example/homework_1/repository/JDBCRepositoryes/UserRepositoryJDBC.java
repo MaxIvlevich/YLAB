@@ -8,7 +8,13 @@ import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInte
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Implementation of the {@link UserRepositoryInterface} that interacts with the database using JDBC.
+ *
+ * <p>This class is responsible for performing CRUD operations related to users in the database.
+ * It provides methods to add, update, delete, retrieve, and check the existence of users based on their ID or email.
+ * The operations are performed using SQL statements via a {@link Connection} object.
+ */
 public class UserRepositoryJDBC implements UserRepositoryInterface {
     private final Connection connection;
 
