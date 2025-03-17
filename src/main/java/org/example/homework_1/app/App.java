@@ -110,6 +110,11 @@ public class App {
             case 0 -> {
                 currentUser = null; // Выход из аккаунта
                 System.out.println("Вы вышли из аккаунта.");
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             }
             default -> System.out.println(" Неверный ввод! Попробуйте снова.");
         }
