@@ -13,7 +13,7 @@ public class LiquibaseHelper {
             Database database = new liquibase.database.core.PostgresDatabase();
             database.setConnection(new JdbcConnection(connection));
 
-            Liquibase liquibase = new Liquibase("db.changelog/changelog-master.xml",
+            Liquibase liquibase = new Liquibase("db.changelog/changelog-master-test.xml",
                     new ClassLoaderResourceAccessor(), database);
 
             liquibase.update("");

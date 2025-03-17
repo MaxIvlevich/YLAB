@@ -146,4 +146,8 @@ public class UserRepositoryJDBC implements UserRepositoryInterface {
         }
         return users;
     }
+
+    public boolean isUserPresent(String email){
+        return getUserByEmail(email) != null;
+    }
 }
