@@ -85,4 +85,14 @@ public class UserRepository implements UserRepositoryInterface {
 
 
     }
+
+    @Override
+    public boolean isUserPresent(String email) {
+        return false;
+    }
+
+    @Override
+    public boolean isUserPresent(Long id) {
+        return false;
+    }
 }

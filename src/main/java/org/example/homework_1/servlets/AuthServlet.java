@@ -5,20 +5,38 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.homework_1.database.ConfigReader;
+import org.example.homework_1.database.DatabaseConfig;
 import org.example.homework_1.dto.LoginDTO;
 import org.example.homework_1.dto.UserDTO;
 import org.example.homework_1.mappers.UserMapper;
 import org.example.homework_1.models.User;
+import org.example.homework_1.repository.JDBCRepositoryes.UserRepositoryJDBC;
+import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
+import org.example.homework_1.services.UserServiceImpl;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 @WebServlet("/api/auth")
 public class AuthServlet extends HttpServlet {
     private  UserServiceInterface userService;
     private final ObjectMapper objectMapper = new ObjectMapper();
-
+    public void init() {
+        try {
+            ConfigReader configReader = new ConfigReader("src/main/resources/config.properties");
+            Connection connection = DatabaseConfig.getConnection(configReader);
+            UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
+            userService = new UserServiceImpl(userRepository);
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка подключения к БД", e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {

@@ -129,5 +129,10 @@ public class UserServiceImpl implements UserServiceInterface {
         return userRepositoryInterface.isUserPresent(email);
     }
 
+    @Override
+    public User getUserById(Long userId) {
+        return userRepositoryInterface.getUserById(userId);
+    }
+
 
 }
