@@ -18,4 +18,6 @@ public interface UserServiceInterface {
     String getUserEmail(Long userId);
 
     List<User> showAllUsers();
+     User getUserByEmail(String userEmail);
+     boolean isUserPresent(String email);
 }

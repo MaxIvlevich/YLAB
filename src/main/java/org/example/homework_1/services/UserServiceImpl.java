@@ -5,6 +5,7 @@ import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
+import org.mapstruct.control.MappingControl;
 
 import java.util.List;
 import java.util.Optional;
@@ -116,6 +117,16 @@ public class UserServiceImpl implements UserServiceInterface {
         List<User> users = userRepositoryInterface.getAllUsers();
         users.forEach(user -> System.out.println(i.getAndIncrement() + ". " + user.getName()));
         return users;
+    }
+
+
+    public User getUserByEmail(String userEmail){
+       return userRepositoryInterface.getUserByEmail(userEmail);
+    }
+
+    @Override
+    public boolean isUserPresent(String email) {
+        return userRepositoryInterface.isUserPresent(email);
     }
 
 

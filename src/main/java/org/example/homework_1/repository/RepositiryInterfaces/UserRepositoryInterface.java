@@ -17,4 +17,6 @@ public interface UserRepositoryInterface {
     boolean updateUser(User updateUser);
 
     List<User> getAllUsers();
+    boolean isUserPresent(String email);
+    boolean isUserPresent(Long id);
 }
