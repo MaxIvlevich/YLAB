@@ -32,35 +32,38 @@ import static org.example.homework_1.models.enums.TransactionType.EXPENSE;
 import static org.example.homework_1.models.enums.TransactionType.INCOME;
 
 public class App {
-    ConfigReader configReader = new ConfigReader("src/main/resources/config.properties");
-    Connection connection ;
+    private  final ConfigReader configReader = new ConfigReader("src/main/resources/config.properties");
+    private Connection connection ;
     private  final Scanner scanner = new Scanner(System.in);
-    private TransactionRepositoryInterface transactionRepository;
+    private  final TransactionRepositoryInterface transactionRepository;
     private  final StringKeeperInterface stringKeeperInter = new StringKeeper();
-    private  final EmailServiceInterface emailService = new EmailService();
-    private   UserServiceInterface userService;
-    private   WalletServiceInterface walletService;
-    private  TransactionServiceInterface transactionService;
-    private   InformationServiceInterface informationService;
-    private  User currentUser = null;
-    private  Long userId = null;
-    public App() throws IOException {
+    private   final  UserServiceInterface userService;
+    private    final WalletServiceInterface walletService;
+    private   final TransactionServiceInterface transactionService;
+    private    final InformationServiceInterface informationService;
+    private  User currentUser;
+    private  Long userId ;
+    public App() throws IOException, SQLException {
+        connection = DatabaseConfig.getConnection(configReader);
+        transactionRepository = new TransactionRepositoryJDBC(connection);
+        UserRepositoryInterface userRepositoryInterface = new UserRepositoryJDBC(connection);
+        userService = new UserServiceImpl(userRepositoryInterface);
+        WalletRepositoryInterface walletRepository = new WalletRepositoryJDBC(connection);
+        EmailServiceInterface emailService = new EmailService();
+        walletService = new WalletServiceImpl(walletRepository, transactionRepository, emailService, userService);
+        transactionService = new TransactionService(transactionRepository);
+        informationService = new InformationServiceImpl(transactionService, walletService);
+        currentUser = null;
+        userId = null;
     }
 
     public void startApp() {
         try {
-             connection = DatabaseConfig.getConnection(configReader);
+
             LiquibaseMigration.runMigration(configReader);
             if(connection!=null){
                 System.out.println(" connection is open startApp LiquibaseMigration");
             }
-            UserRepositoryInterface userRepositoryInterface = new UserRepositoryJDBC(connection);
-            WalletRepositoryInterface walletRepository = new WalletRepositoryJDBC(connection);
-            transactionRepository = new TransactionRepositoryJDBC(connection);
-            userService = new UserServiceImpl(userRepositoryInterface);
-            walletService = new WalletServiceImpl(walletRepository, transactionRepository, emailService, userService);
-            transactionService = new TransactionService(transactionRepository);
-            informationService = new InformationServiceImpl(transactionService, walletService);
             LiquibaseMigration.runMigration(configReader);
             if(connection!=null){
                 System.out.println(" connection is open startApp");

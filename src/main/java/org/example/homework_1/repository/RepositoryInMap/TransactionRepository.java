@@ -28,9 +28,6 @@ public class TransactionRepository implements TransactionRepositoryInterface {
     @Override
     public void addTransaction(Transaction transaction) {
         transactions.computeIfAbsent(transaction.getUserUUID(), k -> new ArrayList<>()).add(transaction);
-       // transactions.putIfAbsent(transaction.getUserUUID(), new ArrayList<>());
-       // transactions.get(transaction.getUserUUID()).add(transaction);
-
     }
 
     /**

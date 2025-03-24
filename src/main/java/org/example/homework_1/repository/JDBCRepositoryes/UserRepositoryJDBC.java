@@ -125,12 +125,8 @@ public class UserRepositoryJDBC implements UserRepositoryInterface {
             System.out.println("🔍 Executing query: " + sql + " with email: " + email);
         }
         try {
-            System.out.println("🔍 Проверка состояния соединения: " + connection.isClosed());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try {
             assert connection != null;
+            System.out.println("🔍 Проверка состояния соединения: " + connection.isClosed());
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, email);
                 try (ResultSet rs = stmt.executeQuery()) {
