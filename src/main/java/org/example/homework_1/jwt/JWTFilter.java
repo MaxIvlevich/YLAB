@@ -20,13 +20,13 @@ public class JWTFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
-        // Пропускаем запросы на аутентификацию
+
         String path = req.getRequestURI();
         if (path.startsWith("/Y_LAB_HW_war/api/auth/")) {
             filterChain.doFilter(request, response);
             return;
         }
-            // Получаем токен из заголовка Authorization
+
         String authHeader = req.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -39,7 +39,7 @@ public class JWTFilter implements Filter {
             resp.getWriter().write("{\"error\": \"Invalid token\"}");
             return;
             }
-            // Добавляем email пользователя в запрос
+
            req.setAttribute("userEmail", JwtUtil.getEmailFromToken(token));
 
            filterChain.doFilter(request, response);
