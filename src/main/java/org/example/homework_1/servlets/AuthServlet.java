@@ -9,6 +9,7 @@ import org.example.homework_1.database.ConfigReader;
 import org.example.homework_1.database.DatabaseConfig;
 import org.example.homework_1.dto.LoginDTO;
 import org.example.homework_1.dto.UserDTO;
+import org.example.homework_1.jwt.JwtUtil;
 import org.example.homework_1.mappers.UserMapper;
 import org.example.homework_1.models.User;
 import org.example.homework_1.repository.JDBCRepositoryes.UserRepositoryJDBC;
@@ -21,13 +22,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
-@WebServlet("/api/auth")
+@WebServlet("/api/auth/*")
 public class AuthServlet extends HttpServlet {
     private  UserServiceInterface userService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     public void init() {
         try {
-            ConfigReader configReader = new ConfigReader("src/main/resources/config.properties");
+             ConfigReader configReader = new ConfigReader("config.properties");
             Connection connection = DatabaseConfig.getConnection(configReader);
             UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
             userService = new UserServiceImpl(userRepository);
@@ -62,15 +63,15 @@ public class AuthServlet extends HttpServlet {
     private void loginUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         LoginDTO loginDTO = objectMapper.readValue(req.getInputStream(), LoginDTO.class);
         Optional<User> user = userService.login(loginDTO.email(), loginDTO.password());
-
         if (user.isPresent()) {
             UserDTO userDTO = UserMapper.INSTANCE.toDTO(user.get());
-
+            String token = JwtUtil.generateToken(user.get().getEmail());
             resp.setContentType("application/json");
             resp.setStatus(HttpServletResponse.SC_OK);
             objectMapper.writeValue(resp.getOutputStream(), Map.of(
                     "message", "Login successful",
-                    "user", userDTO
+                    "user", userDTO,
+                    "token", token
             ));
         } else {
             resp.setContentType("application/json");
