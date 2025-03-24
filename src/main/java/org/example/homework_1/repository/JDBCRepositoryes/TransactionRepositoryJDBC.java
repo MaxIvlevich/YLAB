@@ -164,7 +164,24 @@ public class TransactionRepositoryJDBC implements TransactionRepositoryInterface
             return false;
         }
     }
-    /**
+
+    @Override
+    public Transaction getTransactionBuId(Long id) {
+        Transaction transaction = new Transaction() ;
+        String sql = "SELECT * FROM app.transactions WHERE id = ? ";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                 transaction = mapRowToTransaction(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return transaction;
+    }
+
+        /**
      * Maps a row from the {@code ResultSet} to a {@link Transaction} object.
      *
      * <p>This method converts a row from the {@code ResultSet} into a {@link Transaction} object.

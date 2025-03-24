@@ -15,4 +15,5 @@ public interface TransactionRepositoryInterface {
     boolean deleteTransaction(Long uuid, Long transactionId);
 
     boolean upgradeTransaction(Long userId, Long transactionId, Transaction updatedTransaction);
+    Transaction getTransactionBuId(Long transactionId);
 }

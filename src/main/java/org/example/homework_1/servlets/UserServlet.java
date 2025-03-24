@@ -25,23 +25,19 @@ import java.util.List;
 import java.util.Map;
 @WebServlet("/api/users")
 public class UserServlet extends HttpServlet {
-    private UserServiceInterface userService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
-
-    @Override
-    public void init() {
+    private final Connection connection;
+    {
         try {
             ConfigReader configReader = new ConfigReader("config.properties");
-            Connection connection = DatabaseConfig.getConnection(configReader);
-            UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
-            userService = new UserServiceImpl(userRepository);
-        } catch (SQLException e) {
-            throw new RuntimeException("Ошибка подключения к БД", e);
-        } catch (IOException e) {
+             connection = DatabaseConfig.getConnection(configReader);
+        } catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
+    private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
+    private final UserServiceInterface userService =  new UserServiceImpl(userRepository);
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

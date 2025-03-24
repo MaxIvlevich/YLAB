@@ -10,12 +10,6 @@ import java.io.IOException;
 public class JWTFilter implements Filter {
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // Инициализация (можно оставить пустым)
-    }
-
-
-    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
@@ -26,7 +20,10 @@ public class JWTFilter implements Filter {
             filterChain.doFilter(request, response);
             return;
         }
-
+        if (path.equals("/Y_LAB_HW_war/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         String authHeader = req.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -39,9 +36,7 @@ public class JWTFilter implements Filter {
             resp.getWriter().write("{\"error\": \"Invalid token\"}");
             return;
             }
-
            req.setAttribute("userEmail", JwtUtil.getEmailFromToken(token));
-
            filterChain.doFilter(request, response);
         }
     }

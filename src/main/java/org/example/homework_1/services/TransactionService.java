@@ -191,4 +191,9 @@ public class TransactionService implements TransactionServiceInterface {
         System.out.println("Сумма расходов по категории: " + category + "| " + sumExpense);
     }
 
+    @Override
+    public Transaction getTransactionById(Long transactionId) {
+       return transactionRepository.getTransactionBuId(transactionId);
+    }
+
 }

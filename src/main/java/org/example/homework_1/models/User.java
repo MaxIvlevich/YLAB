@@ -31,6 +31,10 @@ public class User {
         this.status = status;
     }
 
+    public boolean isAdmin(){
+        return this.getRoles().equals(Roles.ADMIN);
+    }
+
 
 
 }

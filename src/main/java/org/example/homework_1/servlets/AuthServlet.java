@@ -64,13 +64,11 @@ public class AuthServlet extends HttpServlet {
         LoginDTO loginDTO = objectMapper.readValue(req.getInputStream(), LoginDTO.class);
         Optional<User> user = userService.login(loginDTO.email(), loginDTO.password());
         if (user.isPresent()) {
-            UserDTO userDTO = UserMapper.INSTANCE.toDTO(user.get());
             String token = JwtUtil.generateToken(user.get().getEmail());
             resp.setContentType("application/json");
             resp.setStatus(HttpServletResponse.SC_OK);
             objectMapper.writeValue(resp.getOutputStream(), Map.of(
                     "message", "Login successful",
-                    "user", userDTO,
                     "token", token
             ));
         } else {

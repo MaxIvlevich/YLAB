@@ -29,6 +29,7 @@ public interface TransactionServiceInterface {
     List<String> showUserExpensesCategory(Long userId);
 
     void getExpensesBySpecificCategory(Long userId, String category, LocalDate fromDate);
+    Transaction getTransactionById(Long transactionId);
 
 
 }
