@@ -39,7 +39,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @param userId unique user ID, UUID value
      */
     @Override
-    public void createWalletForUser(UUID userId) {
+    public void createWalletForUser(Long userId) {
         walletRepository.initializeWallet(userId);
         showBalance(userId);
     }
@@ -50,7 +50,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @param userId unique user ID ,UUID value
      */
     @Override
-    public void showBalance(UUID userId) {
+    public void showBalance(Long userId) {
         System.out.println("Ваш текущий баланс: " + getBalance(userId));
     }
 
@@ -61,7 +61,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @return current balance,double value
      */
     @Override
-    public BigDecimal getBalance(UUID userId) {
+    public BigDecimal getBalance(Long userId) {
         double balance = transactionRepository.getUserTransactions(userId).stream()
                 .mapToDouble(t -> t.getType() == TransactionType.INCOME ?
                         t.getAmount().doubleValue() :
@@ -77,7 +77,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @param budget monthly limit ,double value
      */
     @Override
-    public void setBudget(UUID userId, double budget) {
+    public void setBudget(Long userId, double budget) {
         walletRepository.setBudget(userId, budget);
         System.out.println("Бюджет установлен: " + budget);
     }
@@ -88,7 +88,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @param userId unique user ID, UUID value
      */
     @Override
-    public void showBudget(UUID userId) {
+    public void showBudget(Long userId) {
         if (walletRepository.getBudget(userId) > 0) {
             System.out.println("Ваш месячный бюджет: " + walletRepository.getBudget(userId));
         } else {
@@ -103,7 +103,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @return true if the budget is exceeded and false otherwise
      */
     @Override
-    public boolean isBudgetExceeded(UUID userId) {
+    public boolean isBudgetExceeded(Long userId) {
         List<Transaction> transactions = transactionRepository.getUserExpenseTransactions(userId);
         double userBudget = getBudget(userId);
         LocalDate currentDate = LocalDate.now();
@@ -129,7 +129,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @return returns the budget value from the repository
      */
     @Override
-    public double getBudget(UUID userId) {
+    public double getBudget(Long userId) {
         return walletRepository.getBudget(userId);
 
     }
@@ -140,7 +140,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @param userId unique user ID, UUID value
      */
     @Override
-    public void checkAndNotifyBudgetExceeded(UUID userId) {
+    public void checkAndNotifyBudgetExceeded(Long userId) {
         if (isBudgetExceeded(userId)) {
             System.out.println("Внимание! Превышен бюджет для пользователя: " + userId);
         }
@@ -154,7 +154,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @param targetAmount goal amount, double value
      */
     @Override
-    public void addGoal(UUID userId, String goalName, BigDecimal targetAmount) {
+    public void addGoal(Long userId, String goalName, BigDecimal targetAmount) {
         walletRepository.addGoal(userId, goalName, targetAmount);
         System.out.println("Цель '" + goalName + "' добавлена! Требуется накопить: " + targetAmount);
     }
@@ -165,7 +165,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @param userId unique user ID, UUID value
      */
     @Override
-    public void showGoals(UUID userId) {
+    public void showGoals(Long userId) {
         BigDecimal balance = getBalance(userId);
         walletRepository.showGoals(userId, balance);
     }
@@ -178,7 +178,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @param balance  the user's current balance BigDecimal value.
      */
     @Override
-    public void checkGoal(UUID userId, String goalName, BigDecimal balance) {
+    public void checkGoal(Long userId, String goalName, BigDecimal balance) {
         BigDecimal goal = walletRepository.getUserGoals(userId).get(goalName);
         if (walletRepository.isGoalAchieved(userId, goalName, balance)) {
             System.out.println("Цель: " + goalName + " достигнута" + "| " + goal + "/" + balance + "|");
@@ -191,7 +191,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @param userId unique user ID, UUID value
      */
     @Override
-    public void checkAllGoals(UUID userId) {
+    public void checkAllGoals(Long userId) {
         BigDecimal balance = getBalance(userId);
         List<String> goalNames = walletRepository.getUserGoals(userId).keySet().stream().toList();
         for (String goalName : goalNames) {

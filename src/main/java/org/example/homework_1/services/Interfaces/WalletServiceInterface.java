@@ -4,27 +4,27 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public interface WalletServiceInterface {
-    void createWalletForUser(UUID userId);
+    void createWalletForUser(Long userId);
 
-    void showBalance(UUID userId);
+    void showBalance(Long userId);
 
-    BigDecimal getBalance(UUID userId);
+    BigDecimal getBalance(Long userId);
 
-    void setBudget(UUID userId, double budget);
+    void setBudget(Long userId, double budget);
 
-    void showBudget(UUID userId);
+    void showBudget(Long userId);
 
-    boolean isBudgetExceeded(UUID userId);
+    boolean isBudgetExceeded(Long userId);
 
-    double getBudget(UUID userId);
+    double getBudget(Long userId);
 
-    void checkAndNotifyBudgetExceeded(UUID userId);
+    void checkAndNotifyBudgetExceeded(Long userId);
 
-    void addGoal(UUID userId, String goalName, BigDecimal targetAmount);
+    void addGoal(Long userId, String goalName, BigDecimal targetAmount);
 
-    void showGoals(UUID userId);
+    void showGoals(Long userId);
 
-    void checkGoal(UUID userId, String goalName, BigDecimal balance);
+    void checkGoal(Long userId, String goalName, BigDecimal balance);
 
-    void checkAllGoals(UUID userId);
+    void checkAllGoals(Long userId);
 }

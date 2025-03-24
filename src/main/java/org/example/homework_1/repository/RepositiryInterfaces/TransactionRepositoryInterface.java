@@ -8,11 +8,11 @@ import java.util.UUID;
 public interface TransactionRepositoryInterface {
     void addTransaction(Transaction transaction);
 
-    List<Transaction> getUserTransactions(UUID userId);
+    List<Transaction> getUserTransactions(Long userId);
 
-    List<Transaction> getUserExpenseTransactions(UUID userId);
+    List<Transaction> getUserExpenseTransactions(Long userId);
 
-    boolean deleteTransaction(UUID uuid, UUID transactionId);
+    boolean deleteTransaction(Long uuid, Long transactionId);
 
-    boolean upgradeTransaction(UUID userId, UUID transactionId, Transaction updatedTransaction);
+    boolean upgradeTransaction(Long userId, Long transactionId, Transaction updatedTransaction);
 }

@@ -1,56 +1,91 @@
-package org.example.homework_1.controllers;
+package org.example.homework_1.app;
 
+import org.example.homework_1.controllers.InformationServiceImpl;
+import org.example.homework_1.controllers.InformationServiceInterface;
+import org.example.homework_1.database.ConfigReader;
+import org.example.homework_1.database.DatabaseConfig;
+import org.example.homework_1.database.LiquibaseMigration;
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.User;
-import org.example.homework_1.models.Wallet;
 import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
 import org.example.homework_1.models.enums.TransactionType;
+import org.example.homework_1.repository.JDBCRepositoryes.TransactionRepositoryJDBC;
+import org.example.homework_1.repository.JDBCRepositoryes.UserRepositoryJDBC;
+import org.example.homework_1.repository.JDBCRepositoryes.WalletRepositoryJDBC;
 import org.example.homework_1.repository.RepositiryInterfaces.TransactionRepositoryInterface;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
 import org.example.homework_1.repository.RepositiryInterfaces.WalletRepositoryInterface;
-import org.example.homework_1.repository.TransactionRepository;
-import org.example.homework_1.repository.UserRepository;
-import org.example.homework_1.repository.WalletRepository;
 import org.example.homework_1.services.*;
 import org.example.homework_1.services.Interfaces.*;
 import org.example.homework_1.util.StringKeeper;
 import org.example.homework_1.util.interfaces.StringKeeperInterface;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 
 import static org.example.homework_1.models.enums.TransactionType.EXPENSE;
 import static org.example.homework_1.models.enums.TransactionType.INCOME;
 
-public class MainController {
-    private final Map<UUID, List<Transaction>> transactions = new HashMap<>();
-    private final Map<UUID, User> users = new HashMap<>();
-    private final Map<UUID, Wallet> userWallets = new HashMap<>();
+public class App {
+    private  final ConfigReader configReader = new ConfigReader("src/main/resources/config.properties");
+    private Connection connection ;
     private  final Scanner scanner = new Scanner(System.in);
-    private final UserRepositoryInterface userRepositoryInterface = new UserRepository(users);
-    private  final UserServiceInterface userService = new UserServiceImpl(userRepositoryInterface);
+    private  final TransactionRepositoryInterface transactionRepository;
     private  final StringKeeperInterface stringKeeperInter = new StringKeeper();
-    private  final EmailServiceInterface emailService = new EmailService();
-    private  final WalletRepositoryInterface walletRepository = new WalletRepository(userWallets);
-    private  final TransactionRepositoryInterface transactionRepository = new TransactionRepository(transactions);
-    private  final WalletServiceInterface walletService = new WalletServiceImpl(walletRepository, transactionRepository, emailService, userService);
-    private  final TransactionServiceInterface transactionService = new TransactionService(transactionRepository);
-    private  final InformationServiceInterface informationService = new InformationServiceImpl(transactionService, walletService);
-    private  User currentUser = null;
-    private  UUID userId = null;
-    public void startApp(){
-        while (true) {
-            if (currentUser == null) {
-                showAuthMenu();
-            } else {
-                showMainMenu();
-            }
-        }
+    private   final  UserServiceInterface userService;
+    private    final WalletServiceInterface walletService;
+    private   final TransactionServiceInterface transactionService;
+    private    final InformationServiceInterface informationService;
+    private  User currentUser;
+    private  Long userId ;
+    public App() throws IOException, SQLException {
+        connection = DatabaseConfig.getConnection(configReader);
+        transactionRepository = new TransactionRepositoryJDBC(connection);
+        UserRepositoryInterface userRepositoryInterface = new UserRepositoryJDBC(connection);
+        userService = new UserServiceImpl(userRepositoryInterface);
+        WalletRepositoryInterface walletRepository = new WalletRepositoryJDBC(connection);
+        EmailServiceInterface emailService = new EmailService();
+        walletService = new WalletServiceImpl(walletRepository, transactionRepository, emailService, userService);
+        transactionService = new TransactionService(transactionRepository);
+        informationService = new InformationServiceImpl(transactionService, walletService);
+        currentUser = null;
+        userId = null;
     }
 
+    public void startApp() {
+        try {
 
+            LiquibaseMigration.runMigration(configReader);
+            if(connection!=null){
+                System.out.println(" connection is open startApp LiquibaseMigration");
+            }
+            LiquibaseMigration.runMigration(configReader);
+            if(connection!=null){
+                System.out.println(" connection is open startApp");
+            }else {
+                System.out.println("connection is Close startApp");
+            }
+            connection = DatabaseConfig.getConnection(configReader);
+
+            while (true) {
+                if (currentUser == null) {
+                    showAuthMenu();
+                } else {
+                    showMainMenu();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("❌ Ошибка при запуске приложения",e);
+       }
+    }
     public  void showMainMenu() {
         stringKeeperInter.printMenu();
         int choice = isCorrectChoice();
@@ -70,13 +105,19 @@ public class MainController {
             case 7 -> walletService.showBalance(userId);
             case 8 -> transactionMenu();
             case 9 -> {
-                if (currentUser.getRoles().equals(Roles.ROLE_ADMIN)) {
+                if (currentUser.getRoles().equals(Roles.ADMIN)) {
                     adminMenu();
                 } else userMenu();
             }
             case 0 -> {
                 currentUser = null; // Выход из аккаунта
                 System.out.println("Вы вышли из аккаунта.");
+                try {
+                    connection.close();
+                    System.out.println("connection.closed");
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             }
             default -> System.out.println(" Неверный ввод! Попробуйте снова.");
         }
@@ -92,9 +133,7 @@ public class MainController {
         } else {
             userManage(users, choice);
         }
-
     }
-
     private  void userManage(List<User> users, int choice) {
         User user = users.get(choice - 1);
         System.out.println(" Выбран пользователь " + user.getName());
@@ -105,7 +144,7 @@ public class MainController {
         int choiceFunction = isCorrectChoice();
         switch (choiceFunction) {
             case 1 -> {
-                user.setStatus(Status.STATUS_BANNED);
+                user.setStatus(Status.BANNED);
                 userService.updateUser(user);
             }
             case 2 -> {
@@ -209,7 +248,7 @@ public class MainController {
                 }
             }
             case 5 -> {
-                currentUser.setRoles(Roles.ROLE_ADMIN);
+                currentUser.setRoles(Roles.ADMIN);
                 userService.updateUser(currentUser);
             }
 

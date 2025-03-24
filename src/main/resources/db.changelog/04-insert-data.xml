@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd"
+        logicalFilePath="db/changelog-insert-data.xml">
+
+    <!-- Вставка данных в таблицу users -->
+    <changeSet id="01-insert-users" author="max">
+        <insert tableName="users" schemaName="app">
+            <column name="id" valueSequenceNext="app.users_id_seq"/>
+            <column name="name" value="maxiv"/>
+            <column name="email" value="maxiv@example.com"/>
+            <column name="password" value="hashed_password"/>
+            <column name="roles" value="USER"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+
+        <insert tableName="users" schemaName="app">
+            <column name="id" valueSequenceNext="app.users_id_seq"/>
+            <column name="name" value="ivmax"/>
+            <column name="email" value="ivmax@example.com"/>
+            <column name="password" value="hashed_password"/>
+            <column name="roles" value="ADMIN"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+    </changeSet>
+
+    <!-- Вставка данных в таблицу wallets -->
+    <changeSet id="02-insert-wallets" author="max">
+        <sql>
+        <![CDATA[
+            INSERT INTO app.wallets (user_id, balance, monthly_budget, last_updated)
+            VALUES ((SELECT id FROM app.users WHERE email = 'ivmax@example.com'), '1000.00', '1000.00', '2025-03-15T10:00:00');
+            ]]>
+    </sql>
+
+        <sql>
+        <![CDATA[
+            INSERT INTO app.wallets (user_id, balance, monthly_budget, last_updated)
+            VALUES ((SELECT id FROM app.users WHERE email = 'maxiv@example.com'), '5000.00', '5000.00', '2025-03-15T10:00:00');
+            ]]>
+    </sql>
+    </changeSet>
+
+    <!-- Вставка данных в таблицу transactions -->
+    <changeSet id="03-insert-transactions" author="max">
+        <sql>
+        <![CDATA[
+            INSERT INTO app.transactions (user_id, type,  amount, category, date, description)
+            VALUES ((SELECT id FROM app.users WHERE email = 'ivmax@example.com'), 'INCOME', '500.00', 'Salary', '2025-03-10', 'Monthly salary');
+            ]]>
+    </sql>
+
+        <sql>
+        <![CDATA[
+            INSERT INTO app.transactions (user_id, type,  amount, category, date, description)
+            VALUES ((SELECT id FROM app.users WHERE email = 'maxiv@example.com'), 'EXPENSE', '100.00', 'Groceries', '2025-03-12', 'Supermarket shopping');
+            ]]>
+    </sql>
+    </changeSet>
+    <changeSet id="04-sync-sequence" author="max">
+        <sql>
+            SELECT setval('app.users_id_seq', (SELECT MAX(id) FROM app.users));
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

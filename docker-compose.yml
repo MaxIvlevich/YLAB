@@ -1,0 +1,31 @@
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: YlabApp
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ylab_app
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+       - ./init-scripts:/docker-entrypoint-initdb.d
+  liquibase:
+        image: liquibase/liquibase:latest
+        container_name: liquibase_migrations
+        depends_on:
+          - postgres
+        volumes:
+          - ./db/changelog:/liquibase/changelog
+        environment:
+          LIQUIBASE_COMMAND_URL: jdbc:postgresql://postgres:5432/ylab_app
+          LIQUIBASE_COMMAND_USERNAME: postgres
+          LIQUIBASE_COMMAND_PASSWORD: postgres
+          LIQUIBASE_COMMAND_CHANGELOG_FILE: /liquibase/changelog/db.changelog-master.xml
+        entrypoint: [ "sh", "-c", "sleep 10 && liquibase update" ]
+
+volumes:
+  pgdata:

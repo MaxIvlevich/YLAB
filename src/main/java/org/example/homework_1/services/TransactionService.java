@@ -35,9 +35,9 @@ public class TransactionService implements TransactionServiceInterface {
      * @param description Transaction description.
      */
     @Override
-    public void addTransaction(UUID userId, TransactionType type, BigDecimal amount, String category, String description) {
-        UUID id = UUID.randomUUID();
-        Transaction transaction = new Transaction(id, userId, type, amount, category, LocalDate.now(), description);
+    public void addTransaction(Long userId, TransactionType type, BigDecimal amount, String category, String description) {
+
+        Transaction transaction = new Transaction( userId, type, amount, category, LocalDate.now(), description);
         transactionRepository.addTransaction(transaction);
         System.out.println("Транзакция добавлена.");
 
@@ -50,7 +50,7 @@ public class TransactionService implements TransactionServiceInterface {
      * @return A list of the user's transactions.
      */
     @Override
-    public List<Transaction> showUserTransactions(UUID userId) {
+    public List<Transaction> showUserTransactions(Long userId) {
         List<Transaction> transactions = transactionRepository.getUserTransactions(userId);
         if (transactions.isEmpty()) {
             System.out.println(" У вас нет записей.");
@@ -71,7 +71,7 @@ public class TransactionService implements TransactionServiceInterface {
      * @return true if the transaction was successfully updated, false otherwise.
      */
     @Override
-    public boolean updateTransaction(UUID userId, UUID transactionId, Transaction updatedTransaction) {
+    public boolean updateTransaction(Long userId, Long transactionId, Transaction updatedTransaction) {
         return transactionRepository.upgradeTransaction(userId, transactionId, updatedTransaction);
     }
 
@@ -83,7 +83,7 @@ public class TransactionService implements TransactionServiceInterface {
      * @return
      */
     @Override
-    public boolean deleteTransaction(UUID userId, UUID transactionId) {
+    public boolean deleteTransaction(Long userId, Long transactionId) {
        return transactionRepository.deleteTransaction(userId, transactionId);
 
 
@@ -96,7 +96,7 @@ public class TransactionService implements TransactionServiceInterface {
      * @return The total income amount as a double.
      */
     @Override
-    public double getTotalIncome(UUID userId, LocalDate fromDate) {
+    public double getTotalIncome(Long userId, LocalDate fromDate) {
         return transactionRepository.getUserTransactions(userId).stream()
                 .filter(transaction -> transaction.getType() == TransactionType.INCOME)
                 .filter(transaction -> !transaction.getDate().isBefore(fromDate))
@@ -111,7 +111,7 @@ public class TransactionService implements TransactionServiceInterface {
      * @return The total expense amount as a double.
      */
     @Override
-    public double getTotalExpenses(UUID userId, LocalDate fromDate) {
+    public double getTotalExpenses(Long userId, LocalDate fromDate) {
         return transactionRepository.getUserTransactions(userId).stream()
                 .filter(transaction -> transaction.getType() == TransactionType.EXPENSE)
                 .filter(transaction -> !transaction.getDate().isBefore(fromDate))
@@ -125,7 +125,7 @@ public class TransactionService implements TransactionServiceInterface {
      * @param fromDate The starting date from which transactions are considered.
      */
     @Override
-    public void getTotalExpensesOrIncomeForPeriod(UUID userId, LocalDate fromDate) {
+    public void getTotalExpensesOrIncomeForPeriod(Long userId, LocalDate fromDate) {
         System.out.println("Ваш расход за выбранный период | " + getTotalExpenses(userId, fromDate));
         System.out.println("Ваш доход за выбранный период  | " + getTotalIncome(userId, fromDate));
 
@@ -138,7 +138,7 @@ public class TransactionService implements TransactionServiceInterface {
      * @return A map where the key is the category name, and the value is the total expense amount for that category.
      */
     @Override
-    public Map<String, Double> getExpensesByCategory(UUID userId, LocalDate fromDate) {
+    public Map<String, Double> getExpensesByCategory(Long userId, LocalDate fromDate) {
         Map<String, Double> expensesByCategory = transactionRepository.getUserTransactions(userId).stream()
                 .filter(transaction -> transaction.getType() == TransactionType.EXPENSE)
                 .filter(transaction -> !transaction.getDate().isBefore(fromDate))
@@ -160,7 +160,7 @@ public class TransactionService implements TransactionServiceInterface {
      * @return A list of unique expense categories for the user.
      */
     @Override
-    public List<String> showUserExpensesCategory(UUID userId) {
+    public List<String> showUserExpensesCategory(Long userId) {
         Set<String> userExpensesCategory = transactionRepository.getUserTransactions(userId).stream()
                 .filter(transaction -> transaction.getType() == TransactionType.EXPENSE)
                 .map(Transaction::getCategory)
@@ -180,7 +180,7 @@ public class TransactionService implements TransactionServiceInterface {
      * @param fromDate The starting date from which transactions are considered.
      */
     @Override
-    public void getExpensesBySpecificCategory(UUID userId, String category, LocalDate fromDate) {
+    public void getExpensesBySpecificCategory(Long userId, String category, LocalDate fromDate) {
         double sumExpense = transactionRepository.getUserTransactions(userId).stream()
                 .filter(transaction -> transaction.getType() == TransactionType.EXPENSE)
                 .filter(transaction -> transaction.getCategory().equalsIgnoreCase(category))

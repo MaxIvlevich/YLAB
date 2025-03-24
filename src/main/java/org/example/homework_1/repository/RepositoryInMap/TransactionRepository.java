@@ -1,4 +1,4 @@
-package org.example.homework_1.repository;
+package org.example.homework_1.repository.RepositoryInMap;
 
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.enums.TransactionType;
@@ -12,14 +12,12 @@ import java.util.*;
  *
  */
 public class TransactionRepository implements TransactionRepositoryInterface {
-    private final Map<UUID, List<Transaction>> transactions;
 
-    public TransactionRepository(Map<UUID, List<Transaction>> transactions) {
-        this.transactions = transactions;
-    }
+    private final Map<Long, List<Transaction>> transactions = new HashMap<>();
+
+
     /**
      * Adds a new transaction to the user's transaction list.
-     *
      * This method adds a given transaction to the list of transactions for the user. If the user does not yet have any
      * transactions, a new list is created and the transaction is added to it. The transaction is stored in a map, with the
      * user's UUID as the key and a list of transactions as the value.
@@ -30,9 +28,6 @@ public class TransactionRepository implements TransactionRepositoryInterface {
     @Override
     public void addTransaction(Transaction transaction) {
         transactions.computeIfAbsent(transaction.getUserUUID(), k -> new ArrayList<>()).add(transaction);
-       // transactions.putIfAbsent(transaction.getUserUUID(), new ArrayList<>());
-       // transactions.get(transaction.getUserUUID()).add(transaction);
-
     }
 
     /**
@@ -45,10 +40,8 @@ public class TransactionRepository implements TransactionRepositoryInterface {
      *         If the user has no transactions, an empty list is returned.
      */
     @Override
-    public List<Transaction> getUserTransactions(UUID userId) {
-
+    public List<Transaction> getUserTransactions(Long userId) {
         return transactions.getOrDefault(userId, new ArrayList<>());
-
     }
 
     /**
@@ -61,7 +54,7 @@ public class TransactionRepository implements TransactionRepositoryInterface {
      *         If no expense transactions are found, an empty list is returned.
      */
     @Override
-    public List<Transaction> getUserExpenseTransactions(UUID userId) {
+    public List<Transaction> getUserExpenseTransactions(Long userId) {
         List<Transaction> expenseTransactions = new ArrayList<>();
         List<Transaction> userTransactions = transactions.get(userId);
         if (userTransactions != null) {
@@ -83,7 +76,7 @@ public class TransactionRepository implements TransactionRepositoryInterface {
      * @return {@code true} if the transaction was found and successfully deleted, {@code false} if the transaction does not exist or could not be deleted.
      */
     @Override
-    public boolean deleteTransaction(UUID uuid, UUID transactionId) {
+    public boolean deleteTransaction(Long uuid, Long transactionId) {
         List<Transaction> userTransactions = transactions.get(uuid);
         if (userTransactions != null) {
             userTransactions.removeIf(t -> t.getTransactionUUID().equals(transactionId));
@@ -105,7 +98,7 @@ public class TransactionRepository implements TransactionRepositoryInterface {
      * @return true if the transaction was found and successfully updated, {@code false} if the transaction does not exist for the user.
      */
     @Override
-    public boolean upgradeTransaction(UUID userId, UUID transactionId, Transaction updatedTransaction) {
+    public boolean upgradeTransaction(Long userId, Long transactionId, Transaction updatedTransaction) {
         List<Transaction> userTransactions = transactions.get(userId);
         if (userTransactions != null) {
             for (int i = 0; i < userTransactions.size(); i++) {
