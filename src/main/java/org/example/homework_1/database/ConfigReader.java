@@ -2,17 +2,25 @@ package org.example.homework_1.database;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigReader {
 
-    private final Properties properties;
+    private final Properties properties = new Properties();
 
     public ConfigReader(String configFile) throws IOException {
-        properties = new Properties();
-        try (FileInputStream input = new FileInputStream(configFile)) {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(configFile)) {
+            if (input == null) {
+                throw new IOException("Файл " + configFile + " не найден в classpath!");
+            }
             properties.load(input);
         }
+
+    }
+
+    public String getProperty(String key) {
+        return properties.getProperty(key);
     }
 
     public String getDbUrl() {

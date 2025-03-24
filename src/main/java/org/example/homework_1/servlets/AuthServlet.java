@@ -37,7 +37,6 @@ public class AuthServlet extends HttpServlet {
             throw new RuntimeException(e);
         }
     }
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = req.getPathInfo();
@@ -51,7 +50,6 @@ public class AuthServlet extends HttpServlet {
             objectMapper.writeValue(resp.getOutputStream(), Map.of("error", "Not found"));
         }
     }
-
     private void registerUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         UserDTO userDTO = objectMapper.readValue(req.getInputStream(), UserDTO.class);
         User user = UserMapper.INSTANCE.toEntity(userDTO);
@@ -61,7 +59,6 @@ public class AuthServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_CREATED);
         objectMapper.writeValue(resp.getOutputStream(), Map.of("message", "User registered"));
     }
-
     private void loginUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         LoginDTO loginDTO = objectMapper.readValue(req.getInputStream(), LoginDTO.class);
         Optional<User> user = userService.login(loginDTO.email(), loginDTO.password());

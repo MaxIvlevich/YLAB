@@ -34,7 +34,7 @@ public class UserServlet extends HttpServlet {
     @Override
     public void init() {
         try {
-            ConfigReader configReader = new ConfigReader("src/main/resources/config.properties");
+            ConfigReader configReader = new ConfigReader("config.properties");
             Connection connection = DatabaseConfig.getConnection(configReader);
             UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
             userService = new UserServiceImpl(userRepository);
@@ -82,13 +82,11 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
-
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getOutputStream(), Map.of("error", "User ID is required"));
             return;
         }
-
         try {
             Long userId = Long.parseLong(pathInfo.substring(1));
             UserDTO userRecord = objectMapper.readValue(req.getInputStream(), UserDTO.class);
