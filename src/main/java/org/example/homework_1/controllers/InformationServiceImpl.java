@@ -1,12 +1,11 @@
-package org.example.homework_1.services;
+package org.example.homework_1.controllers;
 
-import org.example.homework_1.services.Interfaces.InformationServiceInterface;
+import org.example.homework_1.controllers.InformationServiceInterface;
 import org.example.homework_1.services.Interfaces.TransactionServiceInterface;
 import org.example.homework_1.services.Interfaces.WalletServiceInterface;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 /**
  * A class for displaying various user information

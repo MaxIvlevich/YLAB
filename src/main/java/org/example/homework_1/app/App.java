@@ -1,5 +1,7 @@
 package org.example.homework_1.app;
 
+import org.example.homework_1.controllers.InformationServiceImpl;
+import org.example.homework_1.controllers.InformationServiceInterface;
 import org.example.homework_1.database.ConfigReader;
 import org.example.homework_1.database.DatabaseConfig;
 import org.example.homework_1.database.LiquibaseMigration;

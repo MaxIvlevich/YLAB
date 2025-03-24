@@ -1,4 +1,4 @@
-package org.example.homework_1.services.Interfaces;
+package org.example.homework_1.controllers;
 
 import java.time.LocalDate;
 import java.util.UUID;
