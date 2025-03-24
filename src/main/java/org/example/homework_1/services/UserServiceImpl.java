@@ -3,13 +3,12 @@ package org.example.homework_1.services;
 import org.example.homework_1.models.User;
 import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
-import org.example.homework_1.repository.UserRepository;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
+import org.mapstruct.control.MappingControl;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -36,9 +35,9 @@ public class UserServiceImpl implements UserServiceInterface {
         if (userRepositoryInterface.getUserByEmail(email) != null) {
             System.out.println("Пользователь с таким email уже существует!");
         }else {
-            User newUser = new User(name, email, password, Roles.ROLE_USER, Status.STATUS_ACTIVE);
+            User newUser = new User(name, email, password, Roles.USER, Status.ACTIVE);
             userRepositoryInterface.addUser(newUser);
-            System.out.println("Пользователь зарегистрирован! Ваш уникальный ID: " + newUser.getUserId());
+            System.out.println("Пользователь успешно  зарегистрирован! ");
         }
     }
 
@@ -59,7 +58,7 @@ public class UserServiceImpl implements UserServiceInterface {
             System.out.println("Неверный пароль.");
             return Optional.empty();
         }
-        if (user.getStatus() == Status.STATUS_BANNED) {
+        if (user.getStatus() == Status.BANNED) {
             System.out.println("Вы забанены !!!");
             return Optional.empty();
         }
@@ -87,7 +86,7 @@ public class UserServiceImpl implements UserServiceInterface {
      * @return True if the user is deleted
      */
     @Override
-    public boolean deleteUser(UUID userId) {
+    public boolean deleteUser(Long userId) {
         if (userRepositoryInterface.getUserById(userId) != null) {
             userRepositoryInterface.deleteUser(userId);
             System.out.println("Пользователь удален");
@@ -104,7 +103,7 @@ public class UserServiceImpl implements UserServiceInterface {
      * @return The email address of the user.
      */
     @Override
-    public String getUserEmail(UUID userId) {
+    public String getUserEmail(Long userId) {
         return userRepositoryInterface.getUserById(userId).getEmail();
     }
     /**
@@ -118,6 +117,21 @@ public class UserServiceImpl implements UserServiceInterface {
         List<User> users = userRepositoryInterface.getAllUsers();
         users.forEach(user -> System.out.println(i.getAndIncrement() + ". " + user.getName()));
         return users;
+    }
+
+
+    public User getUserByEmail(String userEmail){
+       return userRepositoryInterface.getUserByEmail(userEmail);
+    }
+
+    @Override
+    public boolean isUserPresent(String email) {
+        return userRepositoryInterface.isUserPresent(email);
+    }
+
+    @Override
+    public User getUserById(Long userId) {
+        return userRepositoryInterface.getUserById(userId);
     }
 
 

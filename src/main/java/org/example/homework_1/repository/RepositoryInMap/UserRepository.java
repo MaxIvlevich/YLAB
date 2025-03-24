@@ -1,4 +1,4 @@
-package org.example.homework_1.repository;
+package org.example.homework_1.repository.RepositoryInMap;
 
 import org.example.homework_1.models.User;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
@@ -12,11 +12,9 @@ import java.util.*;
  * This implementation stores users in an in-memory map, but can be adapted to use a database.
  */
 public class UserRepository implements UserRepositoryInterface {
-    private Map<UUID, User> users;
+    private final Map<Long, User> users = new HashMap<>();
 
-    public UserRepository(Map<UUID, User> users) {
-        this.users=users;
-    }
+
 
     /**
      * adds a user to the repository
@@ -29,7 +27,7 @@ public class UserRepository implements UserRepositoryInterface {
     }
 
     @Override
-    public User getUserById(UUID userId) {
+    public User getUserById(Long userId) {
         return users.get(userId);
     }
 
@@ -53,7 +51,7 @@ public class UserRepository implements UserRepositoryInterface {
      * @param userId unique user ID
      */
     @Override
-    public void deleteUser(UUID userId) {
+    public void deleteUser(Long userId) {
         users.remove(userId);
     }
 
@@ -86,5 +84,15 @@ public class UserRepository implements UserRepositoryInterface {
         return new ArrayList<>(users.values());
 
 
+    }
+
+    @Override
+    public boolean isUserPresent(String email) {
+        return false;
+    }
+
+    @Override
+    public boolean isUserPresent(Long id) {
+        return false;
     }
 }

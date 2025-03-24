@@ -8,13 +8,15 @@ import java.util.UUID;
 public interface UserRepositoryInterface {
     void addUser(User user);
 
-    User getUserById(UUID userId);
+    User getUserById(Long userId);
 
     User getUserByEmail(String email);
 
-    void deleteUser(UUID userId);
+    void deleteUser(Long userId);
 
     boolean updateUser(User updateUser);
 
     List<User> getAllUsers();
+    boolean isUserPresent(String email);
+    boolean isUserPresent(Long id);
 }

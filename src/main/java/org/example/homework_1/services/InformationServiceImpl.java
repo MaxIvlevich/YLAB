@@ -28,7 +28,7 @@ public class InformationServiceImpl implements InformationServiceInterface {
      * @param fromDate The starting date of the period for which the financial report is generated.
      */
     @Override
-    public void generateReport(UUID userId, LocalDate fromDate) {
+    public void generateReport(Long userId, LocalDate fromDate) {
 
         double totalIncome = transactionService.getTotalIncome(userId, fromDate);
         double totalExpenses = transactionService.getTotalExpenses(userId, fromDate);

@@ -16,10 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -37,11 +34,11 @@ public class WalletServiceTests {
     @InjectMocks
     private WalletServiceImpl walletService;
 
-    private UUID userId;
+    private Long userId;
 
     @BeforeEach
     void setUp() {
-        userId = UUID.randomUUID();
+        Long userId = 1L;
     }
 
     @Test
@@ -52,12 +49,12 @@ public class WalletServiceTests {
 
     @Test
     void testGetBalance() {
-        UUID userId = UUID.randomUUID();
+        Long userId = 1L;
         Transaction incomeTransaction = new Transaction(
-                UUID.randomUUID(), userId, TransactionType.INCOME, BigDecimal.valueOf(1000), "Salary", LocalDate.now(), "Salary payment"
+                userId, userId, TransactionType.INCOME, BigDecimal.valueOf(1000), "Salary", LocalDate.now(), "Salary payment"
         );
         Transaction expenseTransaction = new Transaction(
-                UUID.randomUUID(), userId, TransactionType.EXPENSE, BigDecimal.valueOf(500), "Food", LocalDate.now(), "Grocery shopping"
+                userId , userId, TransactionType.EXPENSE, BigDecimal.valueOf(500), "Food", LocalDate.now(), "Grocery shopping"
         );
 
         when(transactionRepository.getUserTransactions(userId)).thenReturn(Arrays.asList(incomeTransaction, expenseTransaction));
@@ -76,9 +73,9 @@ public class WalletServiceTests {
     @Test
     void testIsBudgetExceeded_BudgetExceeded() {
         double userBudget = 1000;
-        Transaction transaction1 = new Transaction(UUID.randomUUID(), userId,
+        Transaction transaction1 = new Transaction(userId , userId,
                 TransactionType.EXPENSE, BigDecimal.valueOf(600), "", LocalDate.now(), "Food");
-        Transaction transaction2 = new Transaction(UUID.randomUUID(), userId,
+        Transaction transaction2 = new Transaction(userId, userId,
                 TransactionType.EXPENSE, BigDecimal.valueOf(1400), "", LocalDate.now(), "Entertainment");
         List<Transaction> transactions = List.of(transaction1, transaction2);
 
@@ -96,9 +93,9 @@ public class WalletServiceTests {
     void testIsBudgetExceeded_BudgetNotExceeded() {
 
         double userBudget = 1500.0;
-        Transaction transaction1 = new Transaction(UUID.randomUUID(), userId,
+        Transaction transaction1 = new Transaction(userId, userId,
                 TransactionType.EXPENSE, BigDecimal.valueOf(600), "", LocalDate.now(), "Food");
-        Transaction transaction2 = new Transaction(UUID.randomUUID(), userId,
+        Transaction transaction2 = new Transaction(userId, userId,
                 TransactionType.EXPENSE, BigDecimal.valueOf(400), "", LocalDate.now(), "Entertainment");
         List<Transaction> transactions = List.of(transaction1, transaction2);
 
@@ -112,7 +109,7 @@ public class WalletServiceTests {
 
     @Test
     void testAddGoal() {
-        UUID userId = UUID.randomUUID();
+        Long userId = 1L;
         String goalName = "Vacation Fund";
         BigDecimal targetAmount = BigDecimal.valueOf(5000);
         doNothing().when(walletRepository).addGoal(userId, goalName, targetAmount);
@@ -123,7 +120,7 @@ public class WalletServiceTests {
 
     @Test
     void testCheckGoal_GoalAchieved() {
-        UUID userId = UUID.randomUUID();
+        Long userId = 1L;
         String goalName = "Vacation Fund";
         BigDecimal balance = BigDecimal.valueOf(5000);
         BigDecimal goal = BigDecimal.valueOf(5000);
@@ -141,7 +138,7 @@ public class WalletServiceTests {
 
     @Test
     void testCheckGoal_GoalNotAchieved() {
-        UUID userId = UUID.randomUUID();
+
         String goalName = "Vacation Fund";
         BigDecimal balance = BigDecimal.valueOf(3000);
         BigDecimal goal = BigDecimal.valueOf(5000);

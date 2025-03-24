@@ -4,6 +4,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public interface InformationServiceInterface {
-    void generateReport(UUID userId, LocalDate fromDate);
+    void generateReport(Long userId, LocalDate fromDate);
 
 }
