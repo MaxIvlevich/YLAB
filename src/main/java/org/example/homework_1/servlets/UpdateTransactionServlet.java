@@ -1,6 +1,5 @@
 package org.example.homework_1.servlets;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -9,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.homework_1.database.ConfigReader;
 import org.example.homework_1.database.DatabaseConfig;
 import org.example.homework_1.jwt.JwtUtil;
-import org.example.homework_1.mappers.TransactionMapper;
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.User;
 import org.example.homework_1.models.enums.TransactionType;
@@ -21,7 +19,6 @@ import org.example.homework_1.services.Interfaces.TransactionServiceInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
 import org.example.homework_1.services.TransactionService;
 import org.example.homework_1.services.UserServiceImpl;
-import org.mapstruct.factory.Mappers;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -43,7 +40,7 @@ public class UpdateTransactionServlet extends HttpServlet {
     private final TransactionRepositoryInterface transactionRepository = new TransactionRepositoryJDBC(connection);
     private final TransactionServiceInterface transactionService = new TransactionService(transactionRepository);
     private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
-    private final UserServiceInterface userService = new UserServiceImpl(userRepository);
+    private final UserServiceInterface userService = new UserServiceImpl( userRepository);
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

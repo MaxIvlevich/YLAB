@@ -13,7 +13,6 @@ import org.example.homework_1.jwt.JwtUtil;
 import org.example.homework_1.mappers.TransactionMapper;
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.User;
-import org.example.homework_1.models.enums.TransactionType;
 import org.example.homework_1.repository.JDBCRepositoryes.TransactionRepositoryJDBC;
 import org.example.homework_1.repository.JDBCRepositoryes.UserRepositoryJDBC;
 import org.example.homework_1.repository.RepositiryInterfaces.TransactionRepositoryInterface;
@@ -24,7 +23,6 @@ import org.example.homework_1.services.TransactionService;
 import org.example.homework_1.services.UserServiceImpl;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 

@@ -39,7 +39,7 @@ public class DeleteTransactionServlet extends HttpServlet {
     private final TransactionRepositoryInterface transactionRepository = new TransactionRepositoryJDBC(connection);
     private final TransactionServiceInterface transactionService = new TransactionService(transactionRepository);
     private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
-    private final UserServiceInterface userService = new UserServiceImpl(userRepository);
+    private final UserServiceInterface userService = new UserServiceImpl( userRepository);
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String authHeader = req.getHeader("Authorization");

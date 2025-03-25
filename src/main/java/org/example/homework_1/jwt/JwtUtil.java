@@ -1,23 +1,19 @@
 package org.example.homework_1.jwt;
-
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-
 import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 @Slf4j
 public class JwtUtil {
-
     public static String generateToken(String email) {
         Date date = Date.from(LocalDateTime.now()
                 .plusHours(1)
                 .atZone(ZoneId.systemDefault())
                 .toInstant());
-
         return Jwts.builder()
                 .subject(email)
                 .expiration(date)
@@ -28,7 +24,6 @@ public class JwtUtil {
         String jwtSigningKey = "MTEyMzU4MTMwMTEyMzU4MTMyMTM0NTU4OTE0NDIzMzM3NzYxMDk4Nw==";
         byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
         return Keys.hmacShaKeyFor(keyBytes);
-
     }
     public static String getEmailFromToken(String token) {
         Claims claims = Jwts.parser()
@@ -36,7 +31,6 @@ public class JwtUtil {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-
         return claims.getSubject();
     }
     public static boolean validateJwtToken(String token){
@@ -60,7 +54,4 @@ public class JwtUtil {
         }
         return false;
     }
-
-
-
 }

@@ -5,7 +5,7 @@ import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
-import org.mapstruct.control.MappingControl;
+import org.example.homework_1.services.Interfaces.WalletServiceInterface;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +16,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class UserServiceImpl implements UserServiceInterface {
     public UserServiceImpl(UserRepositoryInterface userRepositoryInterface) {
+
         this.userRepositoryInterface=userRepositoryInterface;
+
     }
 
     private final UserRepositoryInterface userRepositoryInterface ;
+
 
 
     /**
@@ -37,6 +40,7 @@ public class UserServiceImpl implements UserServiceInterface {
         }else {
             User newUser = new User(name, email, password, Roles.USER, Status.ACTIVE);
             userRepositoryInterface.addUser(newUser);
+
             System.out.println("Пользователь успешно  зарегистрирован! ");
         }
     }
@@ -127,6 +131,11 @@ public class UserServiceImpl implements UserServiceInterface {
     @Override
     public boolean isUserPresent(String email) {
         return userRepositoryInterface.isUserPresent(email);
+    }
+
+    @Override
+    public boolean isUserPresent(Long id) {
+        return userRepositoryInterface.isUserPresent(id);
     }
 
     @Override

@@ -36,6 +36,11 @@ public class JWTFilter implements Filter {
             resp.getWriter().write("{\"error\": \"Invalid token\"}");
             return;
             }
+        if (TokenBlacklist.isBlacklisted(token)) {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().write("{\"error\": \"Token has been revoked\"}");
+            return;
+        }
            req.setAttribute("userEmail", JwtUtil.getEmailFromToken(token));
            filterChain.doFilter(request, response);
         }

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.homework_1.database.ConfigReader;
 import org.example.homework_1.database.DatabaseConfig;
 import org.example.homework_1.dto.UserDTO;
+import org.example.homework_1.jwt.JwtUtil;
 import org.example.homework_1.mappers.UserMapper;
 import org.example.homework_1.models.User;
 import org.example.homework_1.models.enums.Roles;
@@ -23,19 +24,22 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
 @WebServlet("/api/users")
 public class UserServlet extends HttpServlet {
     private final Connection connection;
+
     {
         try {
             ConfigReader configReader = new ConfigReader("config.properties");
-             connection = DatabaseConfig.getConnection(configReader);
+            connection = DatabaseConfig.getConnection(configReader);
         } catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
     private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
-    private final UserServiceInterface userService =  new UserServiceImpl(userRepository);
+    private final UserServiceInterface userService = new UserServiceImpl( userRepository);
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
@@ -69,49 +73,69 @@ public class UserServlet extends HttpServlet {
             }
         }
     }
-
-    /**
-     * Обновление данных пользователя (PUT /users/{id})
-     */
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User currentUser = getCurrentUser(req);
         String pathInfo = req.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             objectMapper.writeValue(resp.getOutputStream(), Map.of("error", "User ID is required"));
             return;
         }
-        try {
+        if (currentUser.isAdmin()) {
+            try {
+                Long userId = Long.parseLong(pathInfo.substring(1));
+                UserDTO userRecord = objectMapper.readValue(req.getInputStream(), UserDTO.class);
+                User updatedUser = new User(userId, userRecord.name(), userRecord.email(), userRecord.password(), Roles.USER, Status.ACTIVE);
+                userService.updateUser(updatedUser);
+                resp.setContentType("application/json");
+                objectMapper.writeValue(resp.getOutputStream(), Map.of("message", "User updated"));
+            } catch (NumberFormatException e) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                objectMapper.writeValue(resp.getOutputStream(), Map.of("error", "Invalid user ID"));
+            }
+        } else {
             Long userId = Long.parseLong(pathInfo.substring(1));
-            UserDTO userRecord = objectMapper.readValue(req.getInputStream(), UserDTO.class);
-            User updatedUser = new User(userId, userRecord.name(), userRecord.email(), userRecord.password(), Roles.USER, Status.ACTIVE);
+            if (currentUser.getUserId().equals(userId)) {
+                UserDTO userRecord = objectMapper.readValue(req.getInputStream(), UserDTO.class);
+                User updatedUser = new User(userId, userRecord.name(), userRecord.email(), userRecord.password(), Roles.USER, Status.ACTIVE);
+                userService.updateUser(updatedUser);
+                resp.setContentType("application/json");
+                objectMapper.writeValue(resp.getOutputStream(), Map.of("message", "User updated"));
 
-            userService.updateUser(updatedUser);
-            resp.setContentType("application/json");
-            objectMapper.writeValue(resp.getOutputStream(), Map.of("message", "User updated"));
-        } catch (NumberFormatException e) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            objectMapper.writeValue(resp.getOutputStream(), Map.of("error", "Invalid user ID"));
+            } else if (userService.isUserPresent(userId)) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                objectMapper.writeValue(resp.getOutputStream(), Map.of("error", "You don't have access"));
+
+            } else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                objectMapper.writeValue(resp.getOutputStream(), Map.of("error", "Invalid user ID"));
+            }
         }
     }
-
-    /**
-     * Удаление пользователя (DELETE /users/{id})
-     */
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String pathInfo = req.getPathInfo();
-
-        if (pathInfo == null || pathInfo.equals("/")) {
+        User currentUser = getCurrentUser(req);
+        Long userId = Long.valueOf(req.getParameter("userId"));
+        if (currentUser.isAdmin()) {
+            deleteUser(resp, userId);
+        } else if (currentUser.getUserId().equals(userId)) {
+            deleteUser(resp, userId);
+        } else {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            objectMapper.writeValue(resp.getOutputStream(), Map.of("error", "User ID is required"));
-            return;
+            objectMapper.writeValue(resp.getOutputStream(), Map.of("error", "You don't have access"));
         }
+    }
+    private User getCurrentUser(HttpServletRequest req) {
+        String authHeader = req.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        String userEmail = JwtUtil.getEmailFromToken(token);
+        return userService.getUserByEmail(userEmail);
+    }
+    private void deleteUser(HttpServletResponse resp, Long userId) throws IOException {
 
         try {
-            Long userId = Long.parseLong(pathInfo.substring(1));
             boolean deleted = userService.deleteUser(userId);
-
             if (deleted) {
                 objectMapper.writeValue(resp.getOutputStream(), Map.of("message", "User deleted"));
             } else {

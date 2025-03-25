@@ -20,6 +20,7 @@ public interface UserServiceInterface {
     List<User> showAllUsers();
      User getUserByEmail(String userEmail);
      boolean isUserPresent(String email);
+    boolean isUserPresent(Long id);
 
     User getUserById(Long userId);
 

@@ -15,12 +15,18 @@ import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.User;
 import org.example.homework_1.repository.JDBCRepositoryes.TransactionRepositoryJDBC;
 import org.example.homework_1.repository.JDBCRepositoryes.UserRepositoryJDBC;
+import org.example.homework_1.repository.JDBCRepositoryes.WalletRepositoryJDBC;
 import org.example.homework_1.repository.RepositiryInterfaces.TransactionRepositoryInterface;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
+import org.example.homework_1.repository.RepositiryInterfaces.WalletRepositoryInterface;
+import org.example.homework_1.services.EmailService;
+import org.example.homework_1.services.Interfaces.EmailServiceInterface;
 import org.example.homework_1.services.Interfaces.TransactionServiceInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
+import org.example.homework_1.services.Interfaces.WalletServiceInterface;
 import org.example.homework_1.services.TransactionService;
 import org.example.homework_1.services.UserServiceImpl;
+import org.example.homework_1.services.WalletServiceImpl;
 import org.mapstruct.factory.Mappers;
 
 import java.io.IOException;
@@ -45,6 +51,7 @@ public class ShowTransactionsServlet extends HttpServlet {
     private final TransactionMapper transactionMapper = Mappers.getMapper(TransactionMapper.class);
     private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
     private final UserServiceInterface userService = new UserServiceImpl(userRepository);
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String authHeader = req.getHeader("Authorization");

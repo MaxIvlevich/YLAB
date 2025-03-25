@@ -12,10 +12,18 @@ import org.example.homework_1.dto.UserDTO;
 import org.example.homework_1.jwt.JwtUtil;
 import org.example.homework_1.mappers.UserMapper;
 import org.example.homework_1.models.User;
+import org.example.homework_1.repository.JDBCRepositoryes.TransactionRepositoryJDBC;
 import org.example.homework_1.repository.JDBCRepositoryes.UserRepositoryJDBC;
+import org.example.homework_1.repository.JDBCRepositoryes.WalletRepositoryJDBC;
+import org.example.homework_1.repository.RepositiryInterfaces.TransactionRepositoryInterface;
 import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
+import org.example.homework_1.repository.RepositiryInterfaces.WalletRepositoryInterface;
+import org.example.homework_1.services.EmailService;
+import org.example.homework_1.services.Interfaces.EmailServiceInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
+import org.example.homework_1.services.Interfaces.WalletServiceInterface;
 import org.example.homework_1.services.UserServiceImpl;
+import org.example.homework_1.services.WalletServiceImpl;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -24,24 +32,26 @@ import java.util.Map;
 import java.util.Optional;
 @WebServlet("/api/auth/*")
 public class AuthServlet extends HttpServlet {
-    private  UserServiceInterface userService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    public void init() {
+    Connection connection;
+    {
         try {
-             ConfigReader configReader = new ConfigReader("config.properties");
-            Connection connection = DatabaseConfig.getConnection(configReader);
-            UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
-            userService = new UserServiceImpl(userRepository);
-        } catch (SQLException e) {
-            throw new RuntimeException("Ошибка подключения к БД", e);
-        } catch (IOException e) {
+            ConfigReader configReader = new ConfigReader("config.properties");
+            connection = DatabaseConfig.getConnection(configReader);
+        } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
     }
+    private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
+    private final WalletRepositoryInterface walletRepository = new WalletRepositoryJDBC(connection);
+    private final EmailServiceInterface emailService = new EmailService();
+    private  final UserServiceInterface userService = new UserServiceImpl( userRepository);;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final TransactionRepositoryInterface transactionRepository = new TransactionRepositoryJDBC(connection);
+    private final WalletServiceInterface walletService = new WalletServiceImpl(walletRepository,transactionRepository,emailService,userService);
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = req.getPathInfo();
-
         if (path == null || path.equals("/register")) {
             registerUser(req, resp);
         } else if (path.equals("/login")) {
@@ -54,8 +64,9 @@ public class AuthServlet extends HttpServlet {
     private void registerUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         UserDTO userDTO = objectMapper.readValue(req.getInputStream(), UserDTO.class);
         User user = UserMapper.INSTANCE.toEntity(userDTO);
+        String email = user.getEmail();
         userService.register(user.getName(), user.getEmail(), user.getPassword());
-
+        walletService.createWalletForUser(userService.getUserByEmail(email).getUserId());
         resp.setContentType("application/json");
         resp.setStatus(HttpServletResponse.SC_CREATED);
         objectMapper.writeValue(resp.getOutputStream(), Map.of("message", "User registered"));
