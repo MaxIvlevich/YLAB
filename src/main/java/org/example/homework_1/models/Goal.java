@@ -10,8 +10,11 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class Goal {
     private Long goalId;
-    private Long userid;
+    private Long userId;
     private String goalName;
     private BigDecimal target;
 
+    public Goal(Long userId, String goalName, BigDecimal targetAmount) {
+    }
 }
+

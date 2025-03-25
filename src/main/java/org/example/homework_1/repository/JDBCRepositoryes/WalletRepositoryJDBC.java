@@ -1,12 +1,15 @@
 package org.example.homework_1.repository.JDBCRepositoryes;
 
+import org.example.homework_1.models.Goal;
 import org.example.homework_1.models.Wallet;
 import org.example.homework_1.repository.RepositiryInterfaces.WalletRepositoryInterface;
 
 import java.math.BigDecimal;
 import java.sql.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 /**
  * Implementation of the {@link WalletRepositoryInterface} that interacts with the database using JDBC.
@@ -115,14 +118,18 @@ public class WalletRepositoryJDBC implements WalletRepositoryInterface {
      *         {"Buy a car": 5000, "Save for vacation": 2000})
      */
     @Override
-    public Map<String, BigDecimal> getUserGoals(Long userId) {
-        Map<String, BigDecimal> goals = new HashMap<>();
-        String sql = "SELECT goal_name, target_amount FROM app.goals WHERE user_id = ?";
+    public List<Goal> getUserGoals(Long userId) {
+        List<Goal> goals = new ArrayList<>();
+        String sql = "SELECT * FROM app.goals WHERE user_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, userId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    goals.put(rs.getString("goal_name"), rs.getBigDecimal("target_amount"));
+                    goals.add(new Goal(
+                            rs.getLong("id"),
+                            rs.getLong("user_id"),
+                            rs.getString("goal_name"),
+                            rs.getBigDecimal("target_amount")));
                 }
             }
         } catch (SQLException e) {
@@ -170,13 +177,13 @@ public class WalletRepositoryJDBC implements WalletRepositoryInterface {
      */
     @Override
     public void showGoals(Long userId, BigDecimal balance) {
-        Map<String, BigDecimal> goals = getUserGoals(userId);
+        List<Goal> goals = getUserGoals(userId);
         if (goals.isEmpty()) {
             System.out.println("No goals set for this user.");
         } else {
-            for (Map.Entry<String, BigDecimal> entry : goals.entrySet()) {
-                String goalName = entry.getKey();
-                BigDecimal targetAmount = entry.getValue();
+            for (Goal goal : goals) {
+                String goalName = goal.getGoalName();
+                BigDecimal targetAmount = goal.getTarget();
                 boolean achieved = balance.compareTo(targetAmount) >= 0;
                 System.out.printf("Goal: %s, Target: %s, Achieved: %b%n", goalName, targetAmount, achieved);
             }
@@ -201,7 +208,7 @@ public class WalletRepositoryJDBC implements WalletRepositoryInterface {
                 if (rs.next()) {
                     BigDecimal balance = rs.getBigDecimal("balance");
                     BigDecimal monthlyBudget = rs.getBigDecimal("monthly_budget");
-                    Map<String, BigDecimal> goals = getUserGoals(userId);
+                    List<Goal> goals = getUserGoals(userId);
                     return new Wallet(userId, balance, monthlyBudget, goals);
                 }
             }

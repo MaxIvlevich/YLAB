@@ -1,14 +1,13 @@
 package org.example.homework_1.models;
 
+import liquibase.pro.packaged.L;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 /**
@@ -24,18 +23,18 @@ public class Wallet {
     private Long userId;
     private BigDecimal amount;
     private BigDecimal monthlyBudget;
-    private Map<String, BigDecimal> savingsGoals;
+    private List<Goal> savingsGoals;
     private LocalDateTime lastUpdated;
 
     public Wallet(Long userId){
         this.userId = userId;
         this.amount = null;
         this.monthlyBudget = null;
-        this.savingsGoals = new HashMap<>();
+        this.savingsGoals = new ArrayList<>();
         this.lastUpdated = LocalDateTime.now();
     }
 
-    public Wallet(Long userId, BigDecimal amount, BigDecimal monthlyBudget, Map<String, BigDecimal> savingsGoals) {
+    public Wallet(Long userId, BigDecimal amount, BigDecimal monthlyBudget, List<Goal> savingsGoals) {
         this.userId = userId;
         this.amount = amount;
         this.monthlyBudget = monthlyBudget;
@@ -67,14 +66,8 @@ public class Wallet {
         this.monthlyBudget = monthlyBudget;
     }
 
-    /**
-     * adds a new goal
-     * @param goalName the name of the goal for accumulation
-     * @param targetAmount amount to accumulate
-     */
-    public void addGoal(String goalName, BigDecimal targetAmount) {
-        savingsGoals.put(goalName, targetAmount);
-    }
+
+
 
 
 }

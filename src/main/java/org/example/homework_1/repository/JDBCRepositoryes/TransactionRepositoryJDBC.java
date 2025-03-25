@@ -195,8 +195,8 @@ public class TransactionRepositoryJDBC implements TransactionRepositoryInterface
      * @throws SQLException if a database access error occurs or the result set contains invalid data
      */
     private Transaction mapRowToTransaction(ResultSet resultSet) throws SQLException {
-        long id = resultSet.getLong("id"); // Используем long для поля id
-        long userId = resultSet.getLong("user_id"); // Используем long для user_id
+        long id = resultSet.getLong("id");
+        long userId = resultSet.getLong("user_id");
         String type = resultSet.getString("type");
         BigDecimal amount = resultSet.getBigDecimal("amount");
         String category = resultSet.getString("category");

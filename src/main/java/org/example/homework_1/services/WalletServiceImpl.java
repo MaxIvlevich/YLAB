@@ -1,5 +1,6 @@
 package org.example.homework_1.services;
 
+import org.example.homework_1.models.Goal;
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.Wallet;
 import org.example.homework_1.models.enums.TransactionType;
@@ -33,9 +34,9 @@ public class WalletServiceImpl implements WalletServiceInterface {
         this.emailService = emailService;
         this.userService = userService;
     }
-
     /**
      * The method that creates a wallet for a new user
+     *
      * @param userId unique user ID, UUID value
      */
     @Override
@@ -43,9 +44,9 @@ public class WalletServiceImpl implements WalletServiceInterface {
         walletRepository.initializeWallet(userId);
         showBalance(userId);
     }
-
     /**
      * shows the user's current balance
+     *
      * @param userId unique user ID ,UUID value
      */
     @Override
@@ -68,7 +69,6 @@ public class WalletServiceImpl implements WalletServiceInterface {
                 .sum();
         return BigDecimal.valueOf(balance);
     }
-
     /**
      * The method for setting the monthly limit
      *
@@ -80,7 +80,6 @@ public class WalletServiceImpl implements WalletServiceInterface {
         walletRepository.setBudget(userId, budget);
         System.out.println("Бюджет установлен: " + budget);
     }
-
     /**
      * getting the user's budget
      *
@@ -94,7 +93,6 @@ public class WalletServiceImpl implements WalletServiceInterface {
             System.out.println("Ваш месячный бюджет не установлен ");
         }
     }
-
     /**
      * a marker that tracks budget overflows
      *
@@ -118,7 +116,6 @@ public class WalletServiceImpl implements WalletServiceInterface {
             return true;
         }
         return false;
-
     }
 
     /**
@@ -130,9 +127,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
     @Override
     public double getBudget(Long userId) {
         return walletRepository.getBudget(userId);
-
     }
-
     /**
      * budget excess marker
      *
@@ -144,7 +139,6 @@ public class WalletServiceImpl implements WalletServiceInterface {
             System.out.println("Внимание! Превышен бюджет для пользователя: " + userId);
         }
     }
-
     /**
      * Adds a goal for accumulation
      *
@@ -157,7 +151,6 @@ public class WalletServiceImpl implements WalletServiceInterface {
         walletRepository.addGoal(userId, goalName, targetAmount);
         System.out.println("Цель '" + goalName + "' добавлена! Требуется накопить: " + targetAmount);
     }
-
     /**
      * shows the user's current goals
      *
@@ -168,7 +161,6 @@ public class WalletServiceImpl implements WalletServiceInterface {
         BigDecimal balance = getBalance(userId);
         walletRepository.showGoals(userId, balance);
     }
-
     /**
      * checks whether the goal has been completed by name.
      *
@@ -178,12 +170,16 @@ public class WalletServiceImpl implements WalletServiceInterface {
      */
     @Override
     public void checkGoal(Long userId, String goalName, BigDecimal balance) {
-        BigDecimal goal = walletRepository.getUserGoals(userId).get(goalName);
+        BigDecimal goal = walletRepository.getUserGoals(userId)
+                .stream()
+                .filter(g -> g.getGoalName().equals(goalName))
+                .map(Goal::getTarget)
+                .findFirst()
+                .orElse(BigDecimal.ZERO);
         if (walletRepository.isGoalAchieved(userId, goalName, balance)) {
             System.out.println("Цель: " + goalName + " достигнута" + "| " + goal + "/" + balance + "|");
         }
     }
-
     /**
      * they will check all the user's goals
      *
@@ -192,14 +188,17 @@ public class WalletServiceImpl implements WalletServiceInterface {
     @Override
     public void checkAllGoals(Long userId) {
         BigDecimal balance = getBalance(userId);
-        List<String> goalNames = walletRepository.getUserGoals(userId).keySet().stream().toList();
-        for (String goalName : goalNames) {
-            checkGoal(userId, goalName, balance);
+        List<Goal> goals = walletRepository.getUserGoals(userId);
+        for (Goal goal : goals) {
+            checkGoal(userId, goal.getGoalName(), balance);
         }
     }
-
     @Override
     public Wallet getUserWallet(Long userId) {
-       return walletRepository.getUserWallet(userId);
+        return walletRepository.getUserWallet(userId);
+    }
+    @Override
+    public List<Goal> getUserGoals(Long userId){
+        return walletRepository.getUserGoals(userId);
     }
 }

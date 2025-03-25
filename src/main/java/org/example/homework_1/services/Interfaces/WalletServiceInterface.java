@@ -1,8 +1,10 @@
 package org.example.homework_1.services.Interfaces;
 
+import org.example.homework_1.models.Goal;
 import org.example.homework_1.models.Wallet;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 public interface WalletServiceInterface {
@@ -30,4 +32,5 @@ public interface WalletServiceInterface {
 
     void checkAllGoals(Long userId);
     Wallet getUserWallet(Long userId);
+    List<Goal> getUserGoals(Long id);
 }

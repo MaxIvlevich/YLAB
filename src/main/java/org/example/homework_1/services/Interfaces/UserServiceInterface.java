@@ -1,5 +1,6 @@
 package org.example.homework_1.services.Interfaces;
 
+import org.example.homework_1.models.Goal;
 import org.example.homework_1.models.User;
 
 import java.util.List;
@@ -23,5 +24,6 @@ public interface UserServiceInterface {
     boolean isUserPresent(Long id);
 
     User getUserById(Long userId);
+
 
 }

@@ -51,7 +51,6 @@ public class AddTransactionServlet extends HttpServlet {
         User currentUser = userService.getUserByEmail(userEmail);
         try {
             Long userId = currentUser.getUserId();
-            System.out.println("userId :" + userId);
             TransactionDTO transactionDTO = objectMapper.readValue(req.getInputStream(),TransactionDTO.class);
             Transaction transaction = TransactionMapper.INSTANCE.toEntity(transactionDTO);
             transactionService.addTransaction(
