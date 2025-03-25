@@ -1,6 +1,7 @@
 package org.example.homework_1.services;
 
 import org.example.homework_1.models.Transaction;
+import org.example.homework_1.models.Wallet;
 import org.example.homework_1.models.enums.TransactionType;
 import org.example.homework_1.repository.RepositiryInterfaces.TransactionRepositoryInterface;
 import org.example.homework_1.repository.RepositiryInterfaces.WalletRepositoryInterface;
@@ -35,7 +36,6 @@ public class WalletServiceImpl implements WalletServiceInterface {
 
     /**
      * The method that creates a wallet for a new user
-     *
      * @param userId unique user ID, UUID value
      */
     @Override
@@ -46,7 +46,6 @@ public class WalletServiceImpl implements WalletServiceInterface {
 
     /**
      * shows the user's current balance
-     *
      * @param userId unique user ID ,UUID value
      */
     @Override
@@ -77,7 +76,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
      * @param budget monthly limit ,double value
      */
     @Override
-    public void setBudget(Long userId, double budget) {
+    public void setBudget(Long userId, BigDecimal budget) {
         walletRepository.setBudget(userId, budget);
         System.out.println("Бюджет установлен: " + budget);
     }
@@ -197,5 +196,10 @@ public class WalletServiceImpl implements WalletServiceInterface {
         for (String goalName : goalNames) {
             checkGoal(userId, goalName, balance);
         }
+    }
+
+    @Override
+    public Wallet getUserWallet(Long userId) {
+       return walletRepository.getUserWallet(userId);
     }
 }

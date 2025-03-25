@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface WalletRepositoryInterface {
     void initializeWallet(Long userId);
 
-    void setBudget(Long userId, double budget);
+    void setBudget(Long userId, BigDecimal budget);
 
     double getBudget(Long userId);
 

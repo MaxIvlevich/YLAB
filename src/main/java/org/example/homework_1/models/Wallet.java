@@ -1,6 +1,8 @@
 package org.example.homework_1.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,22 +18,24 @@ import java.util.UUID;
  *
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Wallet {
     private Long userId;
-    private double amount;
-    private double monthlyBudget;
+    private BigDecimal amount;
+    private BigDecimal monthlyBudget;
     private Map<String, BigDecimal> savingsGoals;
     private LocalDateTime lastUpdated;
 
     public Wallet(Long userId){
         this.userId = userId;
-        this.amount = 0.0;
-        this.monthlyBudget = 0.0;
+        this.amount = null;
+        this.monthlyBudget = null;
         this.savingsGoals = new HashMap<>();
         this.lastUpdated = LocalDateTime.now();
     }
 
-    public Wallet(Long userId, double amount, double monthlyBudget, Map<String, BigDecimal> savingsGoals) {
+    public Wallet(Long userId, BigDecimal amount, BigDecimal monthlyBudget, Map<String, BigDecimal> savingsGoals) {
         this.userId = userId;
         this.amount = amount;
         this.monthlyBudget = monthlyBudget;
@@ -42,7 +46,7 @@ public class Wallet {
      * sets the balance
      * @param amount the amount to be added to the balance, double value
      */
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
         this.lastUpdated = LocalDateTime.now();
     }
@@ -51,7 +55,7 @@ public class Wallet {
      * returns the budget for the month
      * @return  budget for the month, double value
      */
-    public double getMonthlyBudget() {
+    public BigDecimal getMonthlyBudget() {
         return monthlyBudget;
     }
 
@@ -59,7 +63,7 @@ public class Wallet {
      * the amount of the monthly budget
      * @param monthlyBudget the amount of the monthly budget
      */
-    public void setMonthlyBudget(double monthlyBudget) {
+    public void setMonthlyBudget(BigDecimal monthlyBudget) {
         this.monthlyBudget = monthlyBudget;
     }
 

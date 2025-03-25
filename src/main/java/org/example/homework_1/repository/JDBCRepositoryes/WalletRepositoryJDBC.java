@@ -48,10 +48,10 @@ public class WalletRepositoryJDBC implements WalletRepositoryInterface {
      * @param budget the new monthly budget value to be set for the user
      */
     @Override
-    public void setBudget(Long userId, double budget) {
+    public void setBudget(Long userId, BigDecimal budget) {
         String sql = "UPDATE app.wallets SET monthly_budget = ? WHERE user_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setDouble(1, budget);
+            stmt.setBigDecimal(1, budget);
             stmt.setLong(2, userId);
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -202,7 +202,7 @@ public class WalletRepositoryJDBC implements WalletRepositoryInterface {
                     BigDecimal balance = rs.getBigDecimal("balance");
                     BigDecimal monthlyBudget = rs.getBigDecimal("monthly_budget");
                     Map<String, BigDecimal> goals = getUserGoals(userId);
-                    return new Wallet(userId, balance.doubleValue(), monthlyBudget.doubleValue(), goals);
+                    return new Wallet(userId, balance, monthlyBudget, goals);
                 }
             }
         } catch (SQLException e) {

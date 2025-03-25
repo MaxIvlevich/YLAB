@@ -1,5 +1,7 @@
 package org.example.homework_1.services.Interfaces;
 
+import org.example.homework_1.models.Wallet;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -10,7 +12,7 @@ public interface WalletServiceInterface {
 
     BigDecimal getBalance(Long userId);
 
-    void setBudget(Long userId, double budget);
+    void setBudget(Long userId, BigDecimal budget);
 
     void showBudget(Long userId);
 
@@ -27,4 +29,5 @@ public interface WalletServiceInterface {
     void checkGoal(Long userId, String goalName, BigDecimal balance);
 
     void checkAllGoals(Long userId);
+    Wallet getUserWallet(Long userId);
 }
