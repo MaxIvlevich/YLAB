@@ -28,20 +28,21 @@ public class TransactionService implements TransactionServiceInterface {
     /**
      * Adds a new transaction to the system.
      *
-     * @param userId is the UUID of the user who owns the transaction.
-     * @param type Transaction type (income or expense).
-     * @param amount Transaction amount.
-     * @param category Transaction category (for example, "Products", "Salary").
+     * @param userId      is the UUID of the user who owns the transaction.
+     * @param type        Transaction type (income or expense).
+     * @param amount      Transaction amount.
+     * @param category    Transaction category (for example, "Products", "Salary").
      * @param description Transaction description.
      */
     @Override
     public void addTransaction(Long userId, TransactionType type, BigDecimal amount, String category, String description) {
 
-        Transaction transaction = new Transaction( userId, type, amount, category, LocalDate.now(), description);
+        Transaction transaction = new Transaction(userId, type, amount, category, LocalDate.now(), description);
         transactionRepository.addTransaction(transaction);
         System.out.println("Транзакция добавлена.");
 
     }
+
     /**
      * Displays and returns a list of user transactions.
      * If the user has no transactions, a message is printed to the console.
@@ -62,11 +63,12 @@ public class TransactionService implements TransactionServiceInterface {
         }
         return transactions;
     }
+
     /**
      * Updates an existing transaction for a specific user.
      *
-     * @param userId           UUID of the user who owns the transaction.
-     * @param transactionId    UUID of the transaction to be updated.
+     * @param userId             UUID of the user who owns the transaction.
+     * @param transactionId      UUID of the transaction to be updated.
      * @param updatedTransaction The new transaction data to replace the existing one.
      * @return true if the transaction was successfully updated, false otherwise.
      */
@@ -84,10 +86,11 @@ public class TransactionService implements TransactionServiceInterface {
      */
     @Override
     public boolean deleteTransaction(Long userId, Long transactionId) {
-       return transactionRepository.deleteTransaction(userId, transactionId);
+        return transactionRepository.deleteTransaction(userId, transactionId);
 
 
     }
+
     /**
      * Calculates the total income of a user from a specified date.
      *
@@ -103,6 +106,7 @@ public class TransactionService implements TransactionServiceInterface {
                 .mapToDouble(transaction -> transaction.getAmount().doubleValue())
                 .sum();
     }
+
     /**
      * Calculates the total expenses of a user from a specified date.
      *
@@ -118,6 +122,7 @@ public class TransactionService implements TransactionServiceInterface {
                 .mapToDouble(transaction -> transaction.getAmount().doubleValue())
                 .sum();
     }
+
     /**
      * Displays the total expenses and income for a user within a specified period.
      *
@@ -130,6 +135,7 @@ public class TransactionService implements TransactionServiceInterface {
         System.out.println("Ваш доход за выбранный период  | " + getTotalIncome(userId, fromDate));
 
     }
+
     /**
      * Retrieves and displays the total expenses grouped by category for a user within a specified period.
      *
@@ -153,6 +159,7 @@ public class TransactionService implements TransactionServiceInterface {
         });
         return expensesByCategory;
     }
+
     /**
      * Displays the list of unique expense categories for a user.
      *
@@ -172,6 +179,7 @@ public class TransactionService implements TransactionServiceInterface {
         }
         return userExpensesCategory.stream().toList();
     }
+
     /**
      * Calculates and displays the total expenses for a specific category within a given period for a user.
      *
@@ -193,7 +201,7 @@ public class TransactionService implements TransactionServiceInterface {
 
     @Override
     public Transaction getTransactionById(Long transactionId) {
-       return transactionRepository.getTransactionBuId(transactionId);
+        return transactionRepository.getTransactionBuId(transactionId);
     }
 
 }

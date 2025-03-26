@@ -9,12 +9,10 @@ import org.example.homework_1.repository.RepositiryInterfaces.WalletRepositoryIn
 import org.example.homework_1.services.Interfaces.EmailServiceInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
 import org.example.homework_1.services.Interfaces.WalletServiceInterface;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Service for working with user wallets
@@ -34,6 +32,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
         this.emailService = emailService;
         this.userService = userService;
     }
+
     /**
      * The method that creates a wallet for a new user
      *
@@ -44,6 +43,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
         walletRepository.initializeWallet(userId);
         showBalance(userId);
     }
+
     /**
      * shows the user's current balance
      *
@@ -69,6 +69,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
                 .sum();
         return BigDecimal.valueOf(balance);
     }
+
     /**
      * The method for setting the monthly limit
      *
@@ -80,6 +81,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
         walletRepository.setBudget(userId, budget);
         System.out.println("Бюджет установлен: " + budget);
     }
+
     /**
      * getting the user's budget
      *
@@ -93,6 +95,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
             System.out.println("Ваш месячный бюджет не установлен ");
         }
     }
+
     /**
      * a marker that tracks budget overflows
      *
@@ -128,6 +131,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
     public double getBudget(Long userId) {
         return walletRepository.getBudget(userId);
     }
+
     /**
      * budget excess marker
      *
@@ -139,6 +143,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
             System.out.println("Внимание! Превышен бюджет для пользователя: " + userId);
         }
     }
+
     /**
      * Adds a goal for accumulation
      *
@@ -151,6 +156,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
         walletRepository.addGoal(userId, goalName, targetAmount);
         System.out.println("Цель '" + goalName + "' добавлена! Требуется накопить: " + targetAmount);
     }
+
     /**
      * shows the user's current goals
      *
@@ -161,6 +167,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
         BigDecimal balance = getBalance(userId);
         walletRepository.showGoals(userId, balance);
     }
+
     /**
      * checks whether the goal has been completed by name.
      *
@@ -180,6 +187,7 @@ public class WalletServiceImpl implements WalletServiceInterface {
             System.out.println("Цель: " + goalName + " достигнута" + "| " + goal + "/" + balance + "|");
         }
     }
+
     /**
      * they will check all the user's goals
      *
@@ -193,12 +201,14 @@ public class WalletServiceImpl implements WalletServiceInterface {
             checkGoal(userId, goal.getGoalName(), balance);
         }
     }
+
     @Override
     public Wallet getUserWallet(Long userId) {
         return walletRepository.getUserWallet(userId);
     }
+
     @Override
-    public List<Goal> getUserGoals(Long userId){
+    public List<Goal> getUserGoals(Long userId) {
         return walletRepository.getUserGoals(userId);
     }
 }

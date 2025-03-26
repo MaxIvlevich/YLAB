@@ -1,5 +1,6 @@
 package org.example.homework_1.services;
 
+import org.example.homework_1.aop.Audit;
 import org.example.homework_1.models.User;
 import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
@@ -16,14 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class UserServiceImpl implements UserServiceInterface {
     public UserServiceImpl(UserRepositoryInterface userRepositoryInterface) {
-
         this.userRepositoryInterface=userRepositoryInterface;
-
     }
-
     private final UserRepositoryInterface userRepositoryInterface ;
-
-
 
     /**
      * a method for registering a user based on incoming data
@@ -52,6 +48,7 @@ public class UserServiceImpl implements UserServiceInterface {
      * @return Optional<User> a container that can contain a User object or be empty. Used to avoid null and NullPointerException
      */
     @Override
+    @Audit
     public Optional<User> login(String email, String password) {
         User user = userRepositoryInterface.getUserByEmail(email);
         if (user == null) {
@@ -76,13 +73,13 @@ public class UserServiceImpl implements UserServiceInterface {
      * @param updateUser An instance of the user class that contains the updated parameters
      */
     @Override
+    @Audit
     public void updateUser(User updateUser) {
         if (userRepositoryInterface.updateUser(updateUser)) {
             System.out.println("Пользователь обновлен");
         } else System.out.println("Пользователь не найден");
 
     }
-
     /**
      * Deletes a user by the specified user ID
      *
@@ -90,6 +87,7 @@ public class UserServiceImpl implements UserServiceInterface {
      * @return True if the user is deleted
      */
     @Override
+    @Audit
     public boolean deleteUser(Long userId) {
         if (userRepositoryInterface.getUserById(userId) != null) {
             userRepositoryInterface.deleteUser(userId);
@@ -98,7 +96,6 @@ public class UserServiceImpl implements UserServiceInterface {
 
         } else System.out.println("Пользователь не найден");
         return false;
-
     }
     /**
      * Retrieves the email address of a user based on their user ID.
@@ -107,6 +104,7 @@ public class UserServiceImpl implements UserServiceInterface {
      * @return The email address of the user.
      */
     @Override
+    @Audit
     public String getUserEmail(Long userId) {
         return userRepositoryInterface.getUserById(userId).getEmail();
     }
@@ -116,14 +114,13 @@ public class UserServiceImpl implements UserServiceInterface {
      * @return A list of all users.
      */
     @Override
+    @Audit
     public List<User> showAllUsers() {
         AtomicInteger i = new AtomicInteger(1);
         List<User> users = userRepositoryInterface.getAllUsers();
         users.forEach(user -> System.out.println(i.getAndIncrement() + ". " + user.getName()));
         return users;
     }
-
-
     public User getUserByEmail(String userEmail){
        return userRepositoryInterface.getUserByEmail(userEmail);
     }
