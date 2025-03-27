@@ -1,6 +1,7 @@
 package org.example.homework_1.services;
 
 import org.example.homework_1.aop.Audit;
+import org.example.homework_1.aop.AuditAspect;
 import org.example.homework_1.models.User;
 import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
@@ -50,7 +51,9 @@ public class UserServiceImpl implements UserServiceInterface {
     @Override
     @Audit
     public Optional<User> login(String email, String password) {
+
         User user = userRepositoryInterface.getUserByEmail(email);
+        AuditAspect.setCurrentUser(email);
         if (user == null) {
             System.out.println("Пользователь с таким email не найден");
             return Optional.empty();
