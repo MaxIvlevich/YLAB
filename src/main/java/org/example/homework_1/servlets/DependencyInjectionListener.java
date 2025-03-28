@@ -84,7 +84,7 @@ public class DependencyInjectionListener implements ServletContextListener {
             System.out.println("TransactionServlet registered at /api/transactions/delete");
 
             ShowTransactionsServlet showTransactionsServlet = new ShowTransactionsServlet(transactionService, objectMapper,
-                    TransactionMapper.INSTANCE, userService);
+                    TransactionMapper.INSTANCE);
             ServletRegistration.Dynamic showTransactions = context.addServlet("showTransactionsServlet", showTransactionsServlet);
             showTransactions.addMapping("/api/transactions");
             System.out.println("TransactionServlet registered at /api/transactions");

@@ -30,13 +30,10 @@ public class WalletServlet extends HttpServlet {
         this.userService = userService;
         this.walletService = walletService;
     }
-
-
     @Override
     public void init(ServletConfig config)  {
 
     }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User currentUser = getCurrentUser(req);
