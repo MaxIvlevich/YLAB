@@ -1,61 +1,35 @@
 package org.example.homework_1.servlets;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.homework_1.database.ConfigReader;
-import org.example.homework_1.database.DatabaseConfig;
 import org.example.homework_1.dto.GoalDTO;
-import org.example.homework_1.dto.TransactionDTO;
 import org.example.homework_1.jwt.JwtUtil;
 import org.example.homework_1.mappers.GoalMapper;
-import org.example.homework_1.mappers.TransactionMapper;
-import org.example.homework_1.mappers.UserMapper;
 import org.example.homework_1.models.Goal;
-import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.User;
-import org.example.homework_1.repository.JDBCRepositoryes.TransactionRepositoryJDBC;
-import org.example.homework_1.repository.JDBCRepositoryes.UserRepositoryJDBC;
-import org.example.homework_1.repository.JDBCRepositoryes.WalletRepositoryJDBC;
-import org.example.homework_1.repository.RepositiryInterfaces.TransactionRepositoryInterface;
-import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
-import org.example.homework_1.repository.RepositiryInterfaces.WalletRepositoryInterface;
-import org.example.homework_1.services.EmailService;
-import org.example.homework_1.services.Interfaces.EmailServiceInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
 import org.example.homework_1.services.Interfaces.WalletServiceInterface;
-import org.example.homework_1.services.UserServiceImpl;
-import org.example.homework_1.services.WalletServiceImpl;
-import org.mapstruct.factory.Mappers;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet("/api/goals")
+//@WebServlet("/api/goals")
 public class GoalServlet extends HttpServlet {
-    private final Connection connection;
-    {
-        try {
-            ConfigReader configReader = new ConfigReader("config.properties");
-            connection = DatabaseConfig.getConnection(configReader);
-        } catch (IOException | SQLException e) {
-            throw new RuntimeException(e);
-        }
+    private final WalletServiceInterface walletService ;
+    private final ObjectMapper objectMapper;
+    private final GoalMapper goalMapper;
+    private final UserServiceInterface userService;
+    public GoalServlet(WalletServiceInterface walletService, ObjectMapper objectMapper, GoalMapper goalMapper, UserServiceInterface userService) {
+        this.walletService = walletService;
+        this.objectMapper = objectMapper;
+        this.goalMapper = goalMapper;
+        this.userService = userService;
     }
-    private final WalletRepositoryInterface walletRepository = new WalletRepositoryJDBC(connection);
-    private final TransactionRepositoryInterface transactionRepository = new TransactionRepositoryJDBC(connection);
-    private final EmailServiceInterface emailService = new EmailService();
-    private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
-    private final UserServiceInterface userService = new UserServiceImpl(userRepository);
-    private final WalletServiceInterface walletService = new WalletServiceImpl(walletRepository, transactionRepository, emailService, userService);
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final GoalMapper goalMapper = Mappers.getMapper(GoalMapper.class);
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
         User currentUser = getCurrentUser(req);
         Long id = currentUser.getUserId();
         List<Goal> goals = walletService.getUserGoals(id);
@@ -88,5 +62,4 @@ public class GoalServlet extends HttpServlet {
         String userEmail = JwtUtil.getEmailFromToken(token);
         return userService.getUserByEmail(userEmail);
     }
-
 }

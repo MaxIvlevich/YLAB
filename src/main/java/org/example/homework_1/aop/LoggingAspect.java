@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class LoggingAspect {
     private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
-    @Around("execution(* org.example..*(..))") // Все методы в пакете org.example
+    @Around("execution(* org.example.service..*(..)) || execution(* org.example.repository..*(..))")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         Object result = joinPoint.proceed(); // Вызов метода

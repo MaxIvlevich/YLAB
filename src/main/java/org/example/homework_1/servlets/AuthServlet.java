@@ -30,25 +30,22 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
-@WebServlet("/api/auth/*")
-public class AuthServlet extends HttpServlet {
-    Connection connection;
-    {
-        try {
-            ConfigReader configReader = new ConfigReader("config.properties");
-            connection = DatabaseConfig.getConnection(configReader);
-        } catch (SQLException | IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
-    private final WalletRepositoryInterface walletRepository = new WalletRepositoryJDBC(connection);
-    private final EmailServiceInterface emailService = new EmailService();
-    private  final UserServiceInterface userService = new UserServiceImpl( userRepository);;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final TransactionRepositoryInterface transactionRepository = new TransactionRepositoryJDBC(connection);
-    private final WalletServiceInterface walletService = new WalletServiceImpl(walletRepository,transactionRepository,emailService,userService);
 
+public class AuthServlet extends HttpServlet {
+    private final UserServiceInterface userService;
+    private final WalletServiceInterface walletService;
+    private final ObjectMapper objectMapper;
+    public AuthServlet(UserServiceInterface userService,
+                       WalletServiceInterface walletService,
+                       ObjectMapper objectMapper) {
+        if (userService == null) throw new IllegalArgumentException("UserService cannot be null");
+        if (walletService == null) throw new IllegalArgumentException("WalletService cannot be null");
+        if (objectMapper == null) throw new IllegalArgumentException("ObjectMapper cannot be null");
+
+        this.userService = userService;
+        this.walletService = walletService;
+        this.objectMapper = objectMapper;
+    }
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = req.getPathInfo();

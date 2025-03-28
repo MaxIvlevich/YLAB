@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.homework_1.database.ConfigReader;
 import org.example.homework_1.database.DatabaseConfig;
 import org.example.homework_1.jwt.JwtUtil;
+import org.example.homework_1.mappers.TransactionMapper;
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.User;
 import org.example.homework_1.repository.JDBCRepositoryes.TransactionRepositoryJDBC;
@@ -24,22 +25,15 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@WebServlet("/api/transactions/delete")
+//@WebServlet("/api/transactions/delete")
 public class DeleteTransactionServlet extends HttpServlet {
-    private final Connection connection;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    {
-        try {
-            ConfigReader configReader = new ConfigReader("config.properties");
-            connection = DatabaseConfig.getConnection(configReader);
-        } catch (IOException | SQLException e) {
-            throw new RuntimeException(e);
-        }
+    private final TransactionServiceInterface transactionService;
+    private final UserServiceInterface userService;
+    public DeleteTransactionServlet(TransactionServiceInterface transactionService, UserServiceInterface userService) {
+        this.transactionService = transactionService;
+        this.userService = userService;
     }
-    private final TransactionRepositoryInterface transactionRepository = new TransactionRepositoryJDBC(connection);
-    private final TransactionServiceInterface transactionService = new TransactionService(transactionRepository);
-    private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
-    private final UserServiceInterface userService = new UserServiceImpl( userRepository);
+
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String authHeader = req.getHeader("Authorization");

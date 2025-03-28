@@ -5,43 +5,28 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.homework_1.database.ConfigReader;
-import org.example.homework_1.database.DatabaseConfig;
 import org.example.homework_1.jwt.JwtUtil;
 import org.example.homework_1.models.Transaction;
 import org.example.homework_1.models.User;
 import org.example.homework_1.models.enums.TransactionType;
-import org.example.homework_1.repository.JDBCRepositoryes.TransactionRepositoryJDBC;
-import org.example.homework_1.repository.JDBCRepositoryes.UserRepositoryJDBC;
-import org.example.homework_1.repository.RepositiryInterfaces.TransactionRepositoryInterface;
-import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
 import org.example.homework_1.services.Interfaces.TransactionServiceInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
-import org.example.homework_1.services.TransactionService;
-import org.example.homework_1.services.UserServiceImpl;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDate;
 
-@WebServlet("/api/transactions/update")
+//@WebServlet("/api/transactions/update")
 public class UpdateTransactionServlet extends HttpServlet {
-    private final Connection connection;
-    {
-        try {
-            ConfigReader configReader = new ConfigReader("config.properties");
-            connection = DatabaseConfig.getConnection(configReader);
-        } catch (IOException | SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    private final TransactionRepositoryInterface transactionRepository = new TransactionRepositoryJDBC(connection);
-    private final TransactionServiceInterface transactionService = new TransactionService(transactionRepository);
-    private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
-    private final UserServiceInterface userService = new UserServiceImpl( userRepository);
 
+    private final TransactionServiceInterface transactionService;
+    private final UserServiceInterface userService;
+
+    public UpdateTransactionServlet(TransactionServiceInterface transactionService,
+                                     UserServiceInterface userService) {
+        this.transactionService = transactionService;
+        this.userService = userService;
+    }
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String authHeader = req.getHeader("Authorization");

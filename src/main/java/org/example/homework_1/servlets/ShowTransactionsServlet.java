@@ -28,24 +28,20 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet("/api/transactions")
+//@WebServlet("/api/transactions")
 public class ShowTransactionsServlet extends HttpServlet {
-    private final Connection connection;
-    {
-        try {
-            ConfigReader configReader = new ConfigReader("config.properties");
-            connection = DatabaseConfig.getConnection(configReader);
-        } catch (IOException | SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    private final TransactionRepositoryInterface transactionRepository = new TransactionRepositoryJDBC(connection);
-    private final TransactionServiceInterface transactionService = new TransactionService(transactionRepository);
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final TransactionMapper transactionMapper = Mappers.getMapper(TransactionMapper.class);
-    private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
-    private final UserServiceInterface userService = new UserServiceImpl(userRepository);
+    private final TransactionServiceInterface transactionService;
+    private final ObjectMapper objectMapper;
+    private final TransactionMapper transactionMapper;
+    private final UserServiceInterface userService;
 
+
+    public ShowTransactionsServlet(TransactionServiceInterface transactionService, ObjectMapper objectMapper, TransactionMapper transactionMapper, UserServiceInterface userService) {
+        this.transactionService = transactionService;
+        this.objectMapper = objectMapper;
+        this.transactionMapper = transactionMapper;
+        this.userService = userService;
+    }
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String authHeader = req.getHeader("Authorization");

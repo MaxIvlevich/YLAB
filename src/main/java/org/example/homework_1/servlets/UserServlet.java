@@ -5,43 +5,32 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.homework_1.database.ConfigReader;
-import org.example.homework_1.database.DatabaseConfig;
 import org.example.homework_1.dto.UserDTO;
 import org.example.homework_1.jwt.JwtUtil;
 import org.example.homework_1.mappers.UserMapper;
 import org.example.homework_1.models.User;
 import org.example.homework_1.models.enums.Roles;
 import org.example.homework_1.models.enums.Status;
-import org.example.homework_1.repository.JDBCRepositoryes.UserRepositoryJDBC;
-import org.example.homework_1.repository.RepositiryInterfaces.UserRepositoryInterface;
 import org.example.homework_1.services.Interfaces.UserServiceInterface;
-import org.example.homework_1.services.UserServiceImpl;
-import org.mapstruct.factory.Mappers;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/api/users")
+//@WebServlet("/api/users")
 public class UserServlet extends HttpServlet {
-    private final Connection connection;
+    private final ObjectMapper objectMapper;
+    private final UserServiceInterface userService;
+    private final UserMapper userMapper;
 
-    {
-        try {
-            ConfigReader configReader = new ConfigReader("config.properties");
-            connection = DatabaseConfig.getConnection(configReader);
-        } catch (IOException | SQLException e) {
-            throw new RuntimeException(e);
-        }
+
+    public UserServlet(ObjectMapper objectMapper, UserServiceInterface userService, UserMapper userMapper) {
+        this.objectMapper = objectMapper;
+        this.userService = userService;
+
+        this.userMapper = userMapper;
     }
 
-    private final UserRepositoryInterface userRepository = new UserRepositoryJDBC(connection);
-    private final UserServiceInterface userService = new UserServiceImpl( userRepository);
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
